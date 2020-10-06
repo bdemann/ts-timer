@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+    <head>
+        <link href="node_modules/material-components-web/dist/material-components-web.min.css" rel="stylesheet">
+        <script src="node_modules/material-components-web/dist/material-components-web.min.js"></script>
+        <link rel="stylesheet" href="css/normalize.css">
+        <link rel="stylesheet" href="css/skeleton.css">
+        <link rel="stylesheet" href="css/styles.css">
+        <script type="module" src="example.ts"></script>
+    </head>
+    <body>
+        <div id="app" class="container">
+            <div id="app-body">
+                <div id="alarm-body">
+                    <div class='app-title'>Alarm</div>
+                    <div class="alarm">
+                        <div class="alarm-header row">
+                            <div class="alarm-time on ten columns">6:15 am</div>
+                            <div class="alarm-switch on two columns"><i class="material-icons">toggle-on</i></div>
+                        </div>
+                        <div class="row">
+                            <div class="twelve columns">
+                                <i class="material-icons">check_box</i> Repeat
+                            </div>
+                        </div>
+                        <div class="row">
+                            S M T W T F S
+                        </div>
+                        <div class="row">
+                            <div class="eight columns">
+                                <i class="material-icons">notifications-active</i>&nbsp;&nbsp;The Morning Breaks
+                            </div>
+                            <div class="four columns">
+                                <i class="fas fa-check-square"></i> Vibrate
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="eight columns">
+                                <i class="fas fa-tag"></i>&nbsp;&nbsp;&nbsp;Wake up
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+                <div id="timer-body">
+                    <div class='app-title'>Timer</div>
+                    <div id="timer">0:00</div>
+                    <button>start</button>
+                </div>
+                <div id="clock-body">
+                    <div class="row">
+                        <div class='twelve columns app-title'>Clock</div>
+                    </div>
+                    <div id="clock">
+                        <div id="main-clock">
+                            <div class="row">
+                                <div class="twelve columns" id="main-clock-time">4:12 PM</div>
+                            </div>
+                            <div id="main-clock-date">Wed, Sep 23</div>
+                        </div>
+                        </hr>
+                        <div id="secondary-clocks">
+
+                        </div>
+                        
+                    </div>
+                </div>
+                <div id="stopwatch-body">
+                    <div class='app-title'>Stopwatch</div>
+                    <div id="stopwatch"></div>
+                </div>
+            </div>
+            <div id="app-menu" class="row">
+                <div class="app-button three columns" id="alarm-button"><i class="far fa-bell"></i></br>Alarm</div>
+                <div class="app-button three columns" id="clock-button"><i class="far fa-clock"></i></br>Clock</div>
+                <div class="app-button three columns" id="timer-button"><i class="fas fa-hourglass-end"></i></br>Timer</div>
+                <div class="app-button three columns" id="stopwatch-button"><i class="fas fa-stopwatch"></i></br>Stopwatch</div>
+            </div>
+        </div>
+    </body>
+</html>
