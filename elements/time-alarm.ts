@@ -1,18 +1,28 @@
 import {
     html,
-    render as litRender
-} from 'lit-html'
+    LitElement
+} from 'lit-element'
 
-class TIMEAlarm extends HTMLElement {
+class TIMEAlarm extends LitElement {
     constructor() {
         super();
-        litRender(this.render(), this);
     }
 
     render() {
         return html`
+            <style>
+                .alarm-time {
+                    font-size: 30pt;
+                }
+                .alarm-switch {
+                    font-size: 20pt;
+                    padding-top: 20px;
+                }
+                .alarm-switch.on, .alarm-time.on {
+                    color: #8ab4f8;
+                }
+            </style>
             <div id="alarm-body">
-                <div class='app-title'>Alarm</div>
                 <div class="alarm">
                     <div class="alarm-header row">
                         <div class="alarm-time on ten columns">6:15 am</div>
@@ -47,4 +57,4 @@ class TIMEAlarm extends HTMLElement {
 
 }
 
-window.customElements.define('time-alarm', TIMEAlarm);
+customElements.define('time-alarm', TIMEAlarm);

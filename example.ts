@@ -5,10 +5,6 @@ function myfun() {
     console.log("Hello World");
 };
 
-enum App{
-    alarm, timer, clock, stopwatch
-};
-
 enum Day {
     Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday
 };
@@ -47,38 +43,3 @@ function setupTestData() {
     alarms[1].vibrate = true
     alarms[1].tag = 'Go to sleep';
 }
-
-
-function openApp(app: App) {
-    for (let i in App) {
-        if (!isNaN(parseInt(i))) {
-            document.getElementById(App[i] + '-body').style.display = 'none';
-            document.getElementById(App[i] + '-button').classList.remove('active');
-        }
-    }
-    document.getElementById(App[app] + '-body').style.display = 'block';
-    document.getElementById(App[app] + '-button').classList.add('active')
-}
-
-function appSetup() {
-    let alarmbutton = document.getElementById('alarm-button');
-    let timerbutton = document.getElementById('timer-button');
-    let clockbutton = document.getElementById('clock-button');
-    let stopwatchbutton = document.getElementById('stopwatch-button');
-
-    alarmbutton.onclick = () => {openApp(App.alarm)};
-    timerbutton.onclick = () => {openApp(App.timer)};
-    clockbutton.onclick = () => {openApp(App.clock)};
-    stopwatchbutton.onclick = () => {openApp(App.stopwatch)};
-
-    for (let i in App) {
-        if (!isNaN(parseInt(i))) {
-            document.getElementById(App[i] + '-body').style.display = 'none';
-            document.getElementById(App[i] + '-button').classList.remove('active');
-        }
-    }
-    document.getElementById('alarm-body').style.display = 'block';
-    document.getElementById('clock-button').classList.add('active')
-}
-
-appSetup();

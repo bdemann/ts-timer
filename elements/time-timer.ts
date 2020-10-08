@@ -1,18 +1,24 @@
 import {
     html,
-    render as litRender
-} from 'lit-html'
+    LitElement
+} from 'lit-element'
 
 class TIMETimer extends HTMLElement {
     constructor() {
         super();
-        litRender(this.render(), this);
     }
 
     render() {
         return html`
+            <style>
+                #timer {
+                    padding-top: 150px;
+                    color: #8ab4f8;
+                    font-size: 50pt;
+                    text-align: center;
+                }
+            </style>
             <div id="timer-body">
-                <div class='app-title'>Timer</div>
                 <div id="timer">0:00</div>
                 <button>start</button>
             </div>
@@ -21,4 +27,4 @@ class TIMETimer extends HTMLElement {
 
 }
 
-window.customElements.define('time-timer', TIMETimer);
+customElements.define('time-timer', TIMETimer);
