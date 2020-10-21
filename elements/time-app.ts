@@ -1,7 +1,11 @@
 import {
     html,
-    LitElement
-} from 'lit-element'
+    render as litRender,
+} from 'lit-html'
+
+import {
+   capitalize 
+} from '../ts/utils';
 
 import './time-alarm'
 import './time-clock'
@@ -14,50 +18,36 @@ enum App{
 
 type apptype = 'alarm' | 'timer' | 'clock' | 'stopwatch'
 
-let thing : apptype
+class TIMEApp extends HTMLElement {
 
-class TIMEApp extends LitElement {
+    currentDisplayType: apptype
 
-    constructor() {
-        super();
+    connectedCallback() {
         this.setup();
+        litRender(this.render(), this)
     }
 
     setup(){
-        return
-        for (let i in App) {
-            // TODO make these be bound to the elements instead of this
-            if (!isNaN(parseInt(i))) {
-                document.getElementById(App[i] + '-app').style.display = 'none';
-                document.getElementById(App[i] + '-button').classList.remove('active');
-            }
-        }
-        document.getElementById('clock-app').style.display = 'block';
-        document.getElementById('clock-button').classList.add('active')
+        this.currentDisplayType = 'clock'
+        return;
     }
 
-    showApp(app: App) {
-        console.log("This is the handler");
-        return
-        for (let i in App) {
-            if (!isNaN(parseInt(i))) {
-                document.getElementById(App[i] + '-app').style.display = 'none';
-                document.getElementById(App[i] + '-button').classList.remove('active');
-            }
+    setDisplay(display: apptype) {
+        this.currentDisplayType = display;
+        litRender(this.render(), this);
+    }
+
+    isSelected(display: apptype) {
+        if (display === this.currentDisplayType) {
+            return 'selected-app'
         }
-        document.getElementById(App[app] + '-app').style.display = 'block';
-        document.getElementById(App[app] + '-button').classList.add('active')
+        return ''
     }
 
     render() {
         return html`
-        <link rel="stylesheet" href="css/normalize.css">
-        <link rel="stylesheet" href="css/skeleton.css">
-
-        <link href="node_modules/material-components-web/dist/material-components-web.min.css" rel="stylesheet">
-        <script src="node_modules/material-components-web/dist/material-components-web.min.js"></script>
-
         <style>
+
             #app-menu {
                 padding: 5px;
                 background-color: #36373a;
@@ -85,29 +75,31 @@ class TIMEApp extends LitElement {
                 text-align: center;
                 font-size: 14pt;
             }
+
         </style>
+
         <div id="app" class="container">
-            <div class="app-body">
-                <div class='app-title'>Alarm</div>
-                <time-alarm id="alarm-app"></time-alarm>
-                <time-clock id="clock-app"></time-clock>
-                <time-timer id="timer-app"></time-timer>
-                <time-stopwatch id="stopwatch-app"></time-stopwatch>
+            <div id="app-body">
+                <div class='app-title'>${capitalize(this.currentDisplayType)}</div>
+                <time-alarm id="alarm-app" ?hidden=${this.currentDisplayType !== 'alarm'}></time-alarm>
+                <time-clock id="clock-app" ?hidden=${this.currentDisplayType !== 'clock'}></time-clock>
+                <time-timer id="timer-app" ?hidden=${this.currentDisplayType !== 'timer'}></time-timer>
+                <time-stopwatch id="stopwatch-app" ?hidden=${this.currentDisplayType !== 'stopwatch'}></time-stopwatch>
             </div>
             <div id="app-menu" class="row">
-                <div class="app-button three columns" id="alarm-button" @click="${() => this.showApp(App.alarm)}">
+                <div class="app-button three columns ${this.isSelected("alarm")}" id="alarm-button" @click="${() => this.setDisplay("alarm")}">
                     <span class="material-icons">access_alarm</span>
                     <br>Alarm
                 </div>
-                <div class="app-button three columns" id="clock-button" @click=${() => this.showApp(App.clock)}>
+                <div class="app-button three columns ${this.isSelected("clock")}" id="clock-button" @click=${() => this.setDisplay("clock")}>
                     <span class="material-icons">schedule</span>
                     <br>Clock
                 </div>
-                <div class="app-button three columns" id="timer-button" @click=${() => this.showApp(App.timer)}>
+                <div class="app-button three columns ${this.isSelected("timer")}" id="timer-button" @click=${() => this.setDisplay("timer")}>
                     <span class="material-icons">hourglass_bottom</span>
                     <br>Timer
                 </div>
-                <div class="app-button three columns" id="stopwatch-button" @click=${() => this.showApp(App.stopwatch)}>
+                <div class="app-button three columns ${this.isSelected("stopwatch")}" id="stopwatch-button" @click=${() => this.setDisplay("stopwatch")}>
                     <span class="material-icons">timer</span>
                     <br>Stopwatch
                 </div>

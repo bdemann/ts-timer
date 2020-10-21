@@ -1,10 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
+:root {
+    --bodyColor: white;
+}
+
 body {
     background-color: #202124;
     max-width: 500px;
     margin: auto;
     font-family: 'Open Sans', sans-serif;
-    color: white;
+    color: var(--bodyColor);
 }

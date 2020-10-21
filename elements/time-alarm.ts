@@ -1,11 +1,12 @@
 import {
     html,
-    LitElement
-} from 'lit-element'
+    render as litRender,
+} from 'lit-html';
 
-class TIMEAlarm extends LitElement {
-    constructor() {
-        super();
+class TIMEAlarm extends HTMLElement {
+
+    connectedCallback() {
+        litRender(this.render(), this);
     }
 
     render() {

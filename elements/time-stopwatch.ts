@@ -1,11 +1,12 @@
 import {
     html,
-    LitElement
-} from 'lit-element'
+    render as litRender,
+} from 'lit-html';
 
 class TIMEStopwatch extends HTMLElement {
-    constructor() {
-        super();
+
+    connectedCallback() {
+        litRender(this.render(), this);
     }
 
     render() {
