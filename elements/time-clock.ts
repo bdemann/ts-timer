@@ -6,22 +6,17 @@ import {
 class TIMEClock extends HTMLElement {
     twelveHour: boolean;
     time: Date;
+    time_options;
+    date_options;
 
     constructor() {
         super();
         this.twelveHour = true;
         this.time = new Date()
+        this.time_options = { hour12: true, hour: 'numeric', minute: '2-digit'}
+        this.date_options = { weekday: 'short', month: 'short', day: 'numeric' }
+        this.time_options.hour12 = true
         // this.time = new Date(2018, 0O5, 0O5, 24, 59, 42, 11);  
-    }
-
-    toTimeString() {
-        if (this.twelveHour) {
-            let meridiem = (this.time.getHours() > 11 ? 'pm': 'am');
-            let hours = (this.time.getHours() > 12 ? this.time.getHours() - 12: (this.time.getHours() === 0 ? 12 : this.time.getHours()));
-            return `${hours}:${this.formatMinutes(this.time.getMinutes())}:${this.formatMinutes(this.time.getSeconds())} ${meridiem}`;
-        } else {
-            return `${this.time.getHours}:${this.formatMinutes(this.time.getMinutes())}`;
-        }
     }
 
     updateClock(self: TIMEClock) {
@@ -42,12 +37,6 @@ class TIMEClock extends HTMLElement {
         setInterval(() => this.updateClock(this), 1000);
     }
 
-    // timeToString() {
-    //     if (this.twelveHour) {
-    //         return `${this.time.getHours()}:${this.time.getMinutes() ${this.time.}} `
-    //     }
-    // }
-
     render() {
         return html`
             <style>
@@ -66,9 +55,11 @@ class TIMEClock extends HTMLElement {
                 <div id="clock">
                     <div id="main-clock">
                         <div class="row">
-                            <div class="twelve columns" id="main-clock-time">${this.toTimeString()}</div>
+                            <div class="twelve columns" id="main-clock-time">
+                                ${this.time.toLocaleString('default', this.time_options).toLowerCase()}
+                            </div>
                         </div>
-                        <div id="main-clock-date">Wed, Sep 23</div>
+                        <div id="main-clock-date">${this.time.toLocaleString('default', this.date_options)}</div>
                     </div>
                     <hr/>
                     <div id="secondary-clocks">
