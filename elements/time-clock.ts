@@ -24,14 +24,6 @@ class TIMEClock extends HTMLElement {
         litRender(self.render(), self);
     }
 
-    formatMinutes(minutes: number) {
-        let minuteString = minutes.toString();
-        if (minuteString.length === 1) {
-            return `0${minuteString}`
-        }
-        else return minuteString
-    }
-
     connectedCallback() {
         litRender(this.render(), this);
         setInterval(() => this.updateClock(this), 1000);
