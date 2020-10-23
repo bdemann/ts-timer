@@ -15,13 +15,16 @@ class TIMETimer extends HTMLElement {
     timerLength: number;
     timeLeft: number;
     timeElapsed: number;
+    elapsed: boolean;
+    paused: boolean;
 
     constructor() {
         super();
-        this.timerLength = 120000;
-        this.startTime = new Date();
+        this.timerLength = 12000;
         this.percentComplete = 0;
-        this.running = true;
+        this.running = false;
+        this.elapsed = false;
+        this.paused = false;
     }
 
     connectedCallback() {
@@ -30,13 +33,39 @@ class TIMETimer extends HTMLElement {
     }
 
     updateTimer(self: TIMETimer) {
-        if (self.running) {
+        if (self.paused) {
+
+        } else if (self.running) {
             self.timeElapsed = new Date().getTime() - self.startTime.getTime();
             self.timeLeft = self.timerLength - self.timeElapsed;
-            self.percentComplete = 4 * self.runTime / 1000;
-            self.percentComplete = self.timeElapsed / self.timerLength * 100;
-            litRender(self.render(), self);
+            if (self.timeLeft > 0) {
+                self.percentComplete = self.timeElapsed / self.timerLength * 100;
+            } else {
+                self.percentComplete = 100;
+                self.elapsed = true;
+            }
+        } else {
+            self.timeLeft = self.timerLength;
+            self.percentComplete = 0;
         }
+        litRender(self.render(), self);
+    }
+
+    handlebutton() {
+        if (this.running) {
+            if (this.elapsed) {
+                this.running = false;
+                this.elapsed = false;
+            } else if (this.paused) {
+                this.paused = false;
+            }else{
+                this.paused = true;
+            }
+        } else {
+            this.running = true;
+            this.startTime = new Date();
+        }
+        litRender(this.render(), this);
     }
 
     render() {
@@ -83,16 +112,24 @@ class TIMETimer extends HTMLElement {
                     stroke-dashoffset: calc(630 - (630 * ${this.percentComplete}) / -100);
                     stroke: #8ab4f8;
                 }
+                .elapsed {
+                    animation: blinker 1s linear infinite;
+                }
+                @keyframes blinker { 
+                    50% {
+                        opacity: 0;
+                    }
+                }
             </style>
             <div id="timer-body">
                 <div class="timer">
-                    <svg id="progressbar">
+                    <svg id="progressbar" class="${(this.elapsed ? 'elapsed':'')}">
                         <circle cx="103", cy="103" r="100"></circle>
                         <circle cx="103", cy="103" r="100"></circle>
                     </svg>
-                    <div id="standin-timer">${millisToHourMinSec(this.timeLeft)}</div>
+                    <div id="standin-timer" class="${(this.paused ? 'elapsed':'')}">${(this.timeLeft < 0 ? '-': '')}${millisToHourMinSec(Math.abs(this.timeLeft))}</div>
                 </div>
-                <button>start</button>
+                <button @click=${() => this.handlebutton()}>start</button>
             </div>
         `;
     }
