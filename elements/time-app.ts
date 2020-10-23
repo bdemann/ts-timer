@@ -28,7 +28,7 @@ class TIMEApp extends HTMLElement {
     }
 
     setup(){
-        this.currentDisplayType = 'stopwatch'
+        this.currentDisplayType = 'timer'
         return;
     }
 
