@@ -3,6 +3,11 @@ import {
     render as litRender,
 } from 'lit-html';
 
+import {
+    formatTwoDigits,
+    millisToHourMinSec
+} from '../ts/utils';
+
 class TIMEStopwatch extends HTMLElement {
     running: boolean;
     startTime: Date;
@@ -37,32 +42,15 @@ class TIMEStopwatch extends HTMLElement {
         this.running = !this.running
     }
 
-    formatTwoDigits(number: number) {
-        let numberString = number.toString();
-        if (numberString.length === 1) {
-            return `0${numberString}`
-        }
-        else return numberString
-    }
-
-    toStopwatchString(time: number) {
-        let hour = Math.floor(time / 3.6e+6);
-        let hourString = (hour > 0 ? hour.toString() + ':' : '');
-        let minute = Math.floor(time / 60000) % 60;
-        let minuteString = (minute > 0 ? minute.toString() + ':' : '');
-        let second = Math.floor(time / 1000) % 60;
-        let secondString = (minute > 0 ? this.formatTwoDigits(second): second.toString());
-        return `${hourString}${minuteString}${secondString}`
-    }
-
     toStopwatchMillis(time: number) {
-        return this.formatTwoDigits(Math.floor((time % 1000)/10));
+        return formatTwoDigits(Math.floor((time % 1000)/10));
     }
 
     render() {
         return html`
             <style>
                 #stopwatch-time {
+                    padding: 30% 0;
                     color: #8ab4f8;
                     text-align: center;
                     font-size: 50pt;
@@ -72,7 +60,7 @@ class TIMEStopwatch extends HTMLElement {
                 }
             </style>
             <div id="stopwatch-body">
-                <div id="stopwatch-time"><span>${this.toStopwatchString(this.runTime)}</span><span id='millis-display'>${this.toStopwatchMillis(this.runTime)}</span></div>
+                <div id="stopwatch-time"><span>${millisToHourMinSec(this.runTime)}</span><span id='millis-display'>${this.toStopwatchMillis(this.runTime)}</span></div>
                 <button @click=${() => this.handleStopwatch()}>Start</button>
             </div>
         `;
