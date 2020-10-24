@@ -42,6 +42,12 @@ class TIMEStopwatch extends HTMLElement {
         this.running = !this.running
     }
 
+    handleReset() {
+        this.running = false;
+        this.runTime = 0;
+        litRender(this.render(), this);
+    }
+
     toStopwatchMillis(time: number) {
         return formatTwoDigits(Math.floor((time % 1000)/10));
     }
@@ -58,10 +64,17 @@ class TIMEStopwatch extends HTMLElement {
                 #millis-display {
                     font-size: 50%;
                 }
+                #sw-controls {
+                    text-align: center;
+                }
             </style>
             <div id="stopwatch-body">
                 <div id="stopwatch-time"><span>${millisToHourMinSec(this.runTime)}</span><span id='millis-display'>${this.toStopwatchMillis(this.runTime)}</span></div>
-                <button @click=${() => this.handleStopwatch()}>Start</button>
+                <div id="sw-controls" class="row">
+                    <div class="four columns" @click=${() => this.handleReset()}>Reset</div>
+                    <button class="four columns" @click=${() => this.handleStopwatch()}>Start</button>
+                    <div class="four columns">Lap</div>
+                </div>
             </div>
         `;
     }

@@ -17,11 +17,14 @@ class TIMETimer extends HTMLElement {
     timeElapsed: number;
     elapsed: boolean;
     paused: boolean;
+    previousTimeElapsed: number;
 
     constructor() {
         super();
         this.timerLength = 12000;
         this.percentComplete = 0;
+        this.timeElapsed = 0;
+        this.previousTimeElapsed = 0;
         this.running = false;
         this.elapsed = false;
         this.paused = false;
@@ -36,7 +39,7 @@ class TIMETimer extends HTMLElement {
         if (self.paused) {
 
         } else if (self.running) {
-            self.timeElapsed = new Date().getTime() - self.startTime.getTime();
+            self.timeElapsed = self.previousTimeElapsed + new Date().getTime() - self.startTime.getTime();
             self.timeLeft = self.timerLength - self.timeElapsed;
             if (self.timeLeft > 0) {
                 self.percentComplete = self.timeElapsed / self.timerLength * 100;
@@ -51,15 +54,20 @@ class TIMETimer extends HTMLElement {
         litRender(self.render(), self);
     }
 
+
+    // time elapsed = time elapsed + new start time
     handlebutton() {
         if (this.running) {
             if (this.elapsed) {
                 this.running = false;
                 this.elapsed = false;
+                this.previousTimeElapsed = 0;
             } else if (this.paused) {
                 this.paused = false;
+                this.startTime = new Date();
             }else{
                 this.paused = true;
+                this.previousTimeElapsed = this.timeElapsed;
             }
         } else {
             this.running = true;
