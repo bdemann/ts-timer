@@ -47,6 +47,7 @@ class TIMEApp extends HTMLElement {
     render() {
         return html`
         <style>
+            @import 'vars.css';
 
             #app-menu {
                 padding: 5px;
@@ -54,16 +55,16 @@ class TIMEApp extends HTMLElement {
             }
 
             .app-button {
-                color: #bdc1c6;
+                color: var(--inactiveColor);
                 text-align: center;
             }
 
             .app-button.active {
-                color: #8ab4f8;
+                color: var(--activeColor);
             }
 
             .selected-app {
-                color: #8ab4f8;
+                color: var(--activeColor);
             }
 
             #app-body {

@@ -7,11 +7,7 @@ import {
     millisToHourMinSec
 } from '../ts/utils';
 
-import './timer-timer-input'
-
-type displaytype = 'input' | 'timers';
-
-class TIMETimer extends HTMLElement {
+class TIMETimeDispaly extends HTMLElement {
     percentComplete: number;
     running: boolean;
     runTime: number;
@@ -22,17 +18,16 @@ class TIMETimer extends HTMLElement {
     elapsed: boolean;
     paused: boolean;
     previousTimeElapsed: number;
-    currentDisplayType: displaytype;
 
     constructor() {
         super();
         this.percentComplete = 0;
         this.timeElapsed = 0;
         this.previousTimeElapsed = 0;
+        console.log('Are we really calling the constructor here?')
         this.running = false;
         this.elapsed = false;
         this.paused = false;
-        this.currentDisplayType = 'input';
     }
 
     connectedCallback() {
@@ -40,7 +35,7 @@ class TIMETimer extends HTMLElement {
         setInterval(() => this.updateTimer(this), 10);
     }
 
-    updateTimer(self: TIMETimer) {
+    updateTimer(self: TIMETimeDispaly) {
         if (self.paused) {
 
         } else if (self.running) {
@@ -70,14 +65,12 @@ class TIMETimer extends HTMLElement {
 
     handleStartTimer() {
         console.log(this.timerLength);
-        this.currentDisplayType = 'timers';
         this.running = true;
         this.startTime = new Date();
         litRender(this.render(), this);
     }
 
     handleAddTimer() {
-        this.currentDisplayType = 'input';
         litRender(this.render(), this);
     }
 
@@ -157,9 +150,7 @@ class TIMETimer extends HTMLElement {
                 }
             </style>
             <div id="timer-body">
-                <time-timerinput ?hidden=${this.currentDisplayType !== 'input'} @input=${(e:CustomEvent)=>this.onInputChange(e, this)}></time-timerinput>
-                <button @click=${() => this.handleStartTimer()}>Start</button>
-                <div id="timers" ?hidden=${this.currentDisplayType !=='timers'}>
+                <div id="timers">
                     <div class="timer">
                         <svg id="progressbar" class="${(this.elapsed ? 'elapsed':'')}">
                             <circle cx="103", cy="103" r="100"></circle>
@@ -179,4 +170,4 @@ class TIMETimer extends HTMLElement {
 
 }
 
-customElements.define('time-timer', TIMETimer);
+customElements.define('time-timer', TIMETimeDispaly);
