@@ -74,7 +74,6 @@ class TIMETimer extends HTMLElement {
 
     onInputChange(event: CustomEvent, self: TIMETimer) {
         self.timers[self.currentTimer].timerLength = event.detail;
-        console.log(self.timers[self.currentTimer].timerLength);
     }
 
     handleStartTimer() {
@@ -85,8 +84,18 @@ class TIMETimer extends HTMLElement {
     }
 
     handleAddTimer() {
+        this.timers.push(new Timer());
+        this.currentTimer = this.timers.length - 1;
         this.currentDisplayType = 'input';
         litRender(this.render(), this);
+    }
+
+    handlePrevious() {
+        this.currentTimer = Math.max(0, this.currentTimer - 1);
+    }
+
+    handleNext() {
+        this.currentTimer = Math.min(this.timers.length - 1, this.currentTimer + 1);
     }
 
     // time elapsed = time elapsed + new start time
@@ -135,6 +144,10 @@ class TIMETimer extends HTMLElement {
                     <div class="four columns" @click=${() => this.handleDelete()}>Delete</div>
                     <button class="four columns" @click=${() => this.handlebutton(this.timers[this.currentTimer])}>start</button>
                     <div class="four columns" @click=${() => this.handleAddTimer()}>Add timer</div>
+                </div>
+                <div class="row">
+                    <button class="six columns" @click=${() => this.handlePrevious()}>Previous Timer</button>
+                    <button class="six columns" @click=${() => this.handleNext()}>Next Timer</button>
                 </div>
                 <br>
             </div>

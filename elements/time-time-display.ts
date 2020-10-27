@@ -89,7 +89,6 @@ class TIMETimeDispaly extends HTMLElement {
         if (!this.okToRender) {
             return html``;
         }
-        console.log('Its okay to render');
         return html`
             <style>
                 @import 'vars.css';
