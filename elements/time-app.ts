@@ -68,7 +68,7 @@ class TIMEApp extends HTMLElement {
             }
 
             #app-body {
-                height: 500px;
+                height: 800px;
             }
 
             .app-title {

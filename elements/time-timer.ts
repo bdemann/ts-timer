@@ -3,16 +3,12 @@ import {
     render as litRender,
 } from 'lit-html'
 
-import {
-    millisToHourMinSec
-} from '../ts/utils';
-
 import './timer-timer-input'
+import './time-time-display'
 
 type displaytype = 'input' | 'timers';
 
-class TIMETimer extends HTMLElement {
-    percentComplete: number;
+class Timer {
     running: boolean;
     runTime: number;
     startTime: Date;
@@ -22,17 +18,27 @@ class TIMETimer extends HTMLElement {
     elapsed: boolean;
     paused: boolean;
     previousTimeElapsed: number;
-    currentDisplayType: displaytype;
 
-    constructor() {
-        super();
-        this.percentComplete = 0;
+    constructor () {
         this.timeElapsed = 0;
         this.previousTimeElapsed = 0;
         this.running = false;
         this.elapsed = false;
         this.paused = false;
+    }
+
+}
+
+class TIMETimer extends HTMLElement {
+    currentDisplayType: displaytype;
+    currentTimer: number;
+    timers: Timer[];
+
+    constructor() {
+        super();
         this.currentDisplayType = 'input';
+        this.timers = [new Timer()];
+        this.currentTimer = 0;
     }
 
     connectedCallback() {
@@ -41,21 +47,20 @@ class TIMETimer extends HTMLElement {
     }
 
     updateTimer(self: TIMETimer) {
-        if (self.paused) {
+        self.timers.forEach((timer) => {
+                if (timer.paused) {
 
-        } else if (self.running) {
-            self.timeElapsed = self.previousTimeElapsed + new Date().getTime() - self.startTime.getTime();
-            self.timeLeft = self.timerLength - self.timeElapsed;
-            if (self.timeLeft > 0) {
-                self.percentComplete = self.timeElapsed / self.timerLength * 100;
-            } else {
-                self.percentComplete = 100;
-                self.elapsed = true;
+                } else if (timer.running) {
+                    timer.timeElapsed = timer.previousTimeElapsed + new Date().getTime() - timer.startTime.getTime();
+                    timer.timeLeft = timer.timerLength - timer.timeElapsed;
+                    if (timer.timeLeft < 0) {
+                        timer.elapsed = true;
+                    }
+                } else {
+                    timer.timeLeft = timer.timerLength;
+                }
             }
-        } else {
-            self.timeLeft = self.timerLength;
-            self.percentComplete = 0;
-        }
+        )
         litRender(self.render(), self);
     }
 
@@ -63,16 +68,19 @@ class TIMETimer extends HTMLElement {
 
     }
 
-    onInputChange(event: CustomEvent, self) {
-        self.timerLength = event.detail;
-        console.log(self.timerLength);
+    handleCancel() {
+
+    }
+
+    onInputChange(event: CustomEvent, self: TIMETimer) {
+        self.timers[self.currentTimer].timerLength = event.detail;
+        console.log(self.timers[self.currentTimer].timerLength);
     }
 
     handleStartTimer() {
-        console.log(this.timerLength);
         this.currentDisplayType = 'timers';
-        this.running = true;
-        this.startTime = new Date();
+        this.timers[this.currentTimer].running = true;
+        this.timers[this.currentTimer].startTime = new Date();
         litRender(this.render(), this);
     }
 
@@ -82,22 +90,23 @@ class TIMETimer extends HTMLElement {
     }
 
     // time elapsed = time elapsed + new start time
-    handlebutton() {
-        if (this.running) {
-            if (this.elapsed) {
-                this.running = false;
-                this.elapsed = false;
-                this.previousTimeElapsed = 0;
-            } else if (this.paused) {
-                this.paused = false;
-                this.startTime = new Date();
+    handlebutton(timer: Timer) {
+        if (timer.running) {
+            if (timer.elapsed) {
+                timer.running = false;
+                timer.elapsed = false;
+                timer.previousTimeElapsed = 0;
+                timer.timeElapsed = 0;
+            } else if (timer.paused) {
+                timer.paused = false;
+                timer.startTime = new Date();
             }else{
-                this.paused = true;
-                this.previousTimeElapsed = this.timeElapsed;
+                timer.paused = true;
+                timer.previousTimeElapsed = timer.timeElapsed;
             }
         } else {
-            this.running = true;
-            this.startTime = new Date();
+            timer.running = true;
+            timer.startTime = new Date();
         }
         litRender(this.render(), this);
     }
@@ -106,73 +115,28 @@ class TIMETimer extends HTMLElement {
         return html`
             <style>
                 @import 'vars.css';
-
                 #timer-body {
                     height: 100%;
                 }
-                #standin-timer {
-                    position: absolute;
-                    top: 50px;
-                    width: 100%;
-                    color: var(--activeColor);
-                    font-size: 50pt;
+                #timer-controls, #input-controls {
                     text-align: center;
-                }
-                .timer {
-                    position: relative;
-                    margin: 40px auto;
-                    margin-top: 40px;
-                    width: 206px;
-                    height: 206px;
-                }
-                #progressbar {
-                    transform: rotate(-90deg);
-                    width: 206px;
-                    height: 206px;
-                }
-                #progressbar circle {
-                    width: 150px;
-                    height: 150px; 
-                    fill: none; 
-                    stroke-width: 6;
-                    stroke-dasharray: 630;
-                    stroke-dashoffset: 630;
-                    stroke-linecap: round; 
-                }
-                #progressbar circle:nth-child(1){ 
-                    stroke-dashoffset: 0; 
-                    stroke: var(--bodyColor); 
-                } 
-                #progressbar circle:nth-child(2){
-                    stroke-dashoffset: calc(630 - (630 * ${this.percentComplete}) / -100);
-                    stroke: var(--activeColor);
-                }
-                .elapsed {
-                    animation: blinker 1s linear infinite;
-                }
-                @keyframes blinker { 
-                    50% {
-                        opacity: 0;
-                    }
                 }
             </style>
             <div id="timer-body">
+                <!-- <time-timedisplay paused="true" elapsed="true" .paused=${true}></time-timedisplay> -->
                 <time-timerinput ?hidden=${this.currentDisplayType !== 'input'} @input=${(e:CustomEvent)=>this.onInputChange(e, this)}></time-timerinput>
-                <button @click=${() => this.handleStartTimer()}>Start</button>
-                <div id="timers" ?hidden=${this.currentDisplayType !=='timers'}>
-                    <div class="timer">
-                        <svg id="progressbar" class="${(this.elapsed ? 'elapsed':'')}">
-                            <circle cx="103", cy="103" r="100"></circle>
-                            <circle cx="103", cy="103" r="100"></circle>
-                        </svg>
-                        <div id="standin-timer" class="${(this.paused ? 'elapsed':'')}">${(this.timeLeft < 0 ? '-': '')}${millisToHourMinSec(Math.abs(this.timeLeft))}</div>
-                    </div>
-                    <div id="sw-controls" class="row">
-                        <div class="four columns" @click=${() => this.handleDelete()}>Delete</div>
-                        <button class="four columns" @click=${() => this.handlebutton()}>start</button>
-                        <div class="four columns" @click=${() => this.handleAddTimer()}>Add timer</div>
-                    </div>
+                <time-timedisplay ?hidden=${this.currentDisplayType !== 'timers'} .timerLength=${this.timers[this.currentTimer].timerLength} .elapsed=${this.timers[this.currentTimer].elapsed} .paused=${this.timers[this.currentTimer].paused} .radius=${100} .timeElapsed=${this.timers[this.currentTimer].timeElapsed}></time-timedisplay>
+                <div ?hidden=${this.currentDisplayType !== 'input'} id="input-controls" class="row">
+                    <div class="four columns" @click=${() => this.handleCancel()}>Cancel</div>
+                    <button class="four columns" @click=${() => this.handleStartTimer()}>Begin Timer</button>
+                    <div class="four columns">&nbsp;</div>
                 </div>
+                <div ?hidden=${this.currentDisplayType !== 'timers'} id="timer-controls" class="row">
+                    <div class="four columns" @click=${() => this.handleDelete()}>Delete</div>
+                    <button class="four columns" @click=${() => this.handlebutton(this.timers[this.currentTimer])}>start</button>
+                    <div class="four columns" @click=${() => this.handleAddTimer()}>Add timer</div>
+                </div>
+                <br>
             </div>
         `;
     }

@@ -111,47 +111,45 @@ class TIMETimerInput extends HTMLElement {
                     margin-bottom: 25px;
                 }
             </style>
-            <div id="timer-body">
-                <div id="timer-input">
-                    <div id="timer-length-input" class="${(this.input.length > 0 ? 'active' : 'inactive')}">
-                        <span class="input-number-display">
-                            ${formatTwoDigits(this.hourInput)}
-                        </span>
-                        <span class="input-unit-display">h</span>
-                        <span class="input-number-display">
-                            ${formatTwoDigits(this.minuteInput)}
-                        </span>
-                        <span class="input-unit-display">m</span>
-                        <span class="input-number-display">
-                            ${formatTwoDigits(this.secondInput)}
-                        </span>
-                        <span class="input-unit-display">s</span>
-                        &nbsp;
-                        <span class="material-icons" @click=${() => this.handleBackspace()}>
-                            backspace
-                        </span>
-                    </div>
-                    <hr>
-                    <div class="row input-row">
-                        <div class="four columns input-number" @click=${() => this.handleInput(1)}>1</div>
-                        <div class="four columns input-number" @click=${() => this.handleInput(2)}>2</div>
-                        <div class="four columns input-number" @click=${() => this.handleInput(3)}>3</div>
-                    </div>
-                    <div class="row input-row">
-                        <div class="four columns input-number" @click=${() => this.handleInput(4)}>4</div>
-                        <div class="four columns input-number" @click=${() => this.handleInput(5)}>5</div>
-                        <div class="four columns input-number" @click=${() => this.handleInput(6)}>6</div>
-                    </div>
-                    <div class="row input-row">
-                        <div class="four columns input-number" @click=${() => this.handleInput(7)}>7</div>
-                        <div class="four columns input-number" @click=${() => this.handleInput(8)}>8</div>
-                        <div class="four columns input-number" @click=${() => this.handleInput(9)}>9</div>
-                    </div>
-                    <div class="row input-row">
-                        <div class="four columns input-number">&nbsp;</div>
-                        <div class="four columns input-number" @click=${() => this.handleInput(0)}>0</div>
-                        <div class="four columns input-number">&nbsp;</div>
-                    </div>
+            <div id="timer-input">
+                <div id="timer-length-input" class="${(this.input.length > 0 ? 'active' : 'inactive')}">
+                    <span class="input-number-display">
+                        ${formatTwoDigits(this.hourInput)}
+                    </span>
+                    <span class="input-unit-display">h</span>
+                    <span class="input-number-display">
+                        ${formatTwoDigits(this.minuteInput)}
+                    </span>
+                    <span class="input-unit-display">m</span>
+                    <span class="input-number-display">
+                        ${formatTwoDigits(this.secondInput)}
+                    </span>
+                    <span class="input-unit-display">s</span>
+                    &nbsp;
+                    <span class="material-icons" @click=${() => this.handleBackspace()}>
+                        backspace
+                    </span>
+                </div>
+                <hr>
+                <div class="row input-row">
+                    <div class="four columns input-number" @click=${() => this.handleInput(1)}>1</div>
+                    <div class="four columns input-number" @click=${() => this.handleInput(2)}>2</div>
+                    <div class="four columns input-number" @click=${() => this.handleInput(3)}>3</div>
+                </div>
+                <div class="row input-row">
+                    <div class="four columns input-number" @click=${() => this.handleInput(4)}>4</div>
+                    <div class="four columns input-number" @click=${() => this.handleInput(5)}>5</div>
+                    <div class="four columns input-number" @click=${() => this.handleInput(6)}>6</div>
+                </div>
+                <div class="row input-row">
+                    <div class="four columns input-number" @click=${() => this.handleInput(7)}>7</div>
+                    <div class="four columns input-number" @click=${() => this.handleInput(8)}>8</div>
+                    <div class="four columns input-number" @click=${() => this.handleInput(9)}>9</div>
+                </div>
+                <div class="row input-row">
+                    <div class="four columns input-number">&nbsp;</div>
+                    <div class="four columns input-number" @click=${() => this.handleInput(0)}>0</div>
+                    <div class="four columns input-number">&nbsp;</div>
                 </div>
             </div>
         `;

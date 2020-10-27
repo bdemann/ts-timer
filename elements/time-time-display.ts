@@ -8,104 +8,95 @@ import {
 } from '../ts/utils';
 
 class TIMETimeDispaly extends HTMLElement {
-    percentComplete: number;
-    running: boolean;
-    runTime: number;
-    startTime: Date;
-    timerLength: number;
-    timeLeft: number;
-    timeElapsed: number;
-    elapsed: boolean;
-    paused: boolean;
-    previousTimeElapsed: number;
+    okToRender: boolean;
+    static get properties() {
+        return {
+            paused: {attribute: true, type: Boolean},
+            elapsed: {type: Boolean}
+        };
+    }
+
+    // Display Properties
+    private _radius: number;
+    private _elapsed: boolean;
+    private _stroke: number;
+    private _paused: boolean;
+    set paused(value: boolean) {
+        this._paused = value;
+    }
+    set radius(value: number) {
+        this._radius = value;
+    }
+    set elapsed(value: boolean) {
+        this._elapsed = value;
+    }
+    set stroke(value: number) {
+        this._stroke = value;
+    }
+
+    // Time Properties
+    private _runTime: number;
+    private _timerLength: number;
+    private _timeElapsed: number;
+    set runTime(value: number) {
+        this._runTime = value;
+    }
+    set timerLength(value: number) {
+        this._timerLength = value;
+    }
+    set timeElapsed(value: number) {
+        this._timeElapsed = value;
+    }
+
+    // Time helpers
+    private _percentComplete() {
+        return Math.min(this._timeElapsed / this._timerLength * 100, 100);
+    }
+    private _timeLeft() {
+        return this._timerLength - this._timeElapsed;
+    }
+
+    // Display helpers
+    private _pos() {
+        return this._radius + (this._stroke/2);
+    }
+    private _width() {
+        return (this._radius * 2) + this._stroke;
+    }
+    private _circumference() {
+        return 2 * Math.PI * this._radius;
+    }
 
     constructor() {
         super();
-        this.percentComplete = 0;
-        this.timeElapsed = 0;
-        this.previousTimeElapsed = 0;
-        console.log('Are we really calling the constructor here?')
-        this.running = false;
-        this.elapsed = false;
-        this.paused = false;
+        this.okToRender = false;
+        this.stroke = 6;
+        this.radius = 100;
+        this._timeElapsed = 0;
+        this._timerLength = 100000;
     }
 
     connectedCallback() {
+        this.okToRender = true;
         litRender(this.render(), this);
-        setInterval(() => this.updateTimer(this), 10);
-    }
-
-    updateTimer(self: TIMETimeDispaly) {
-        if (self.paused) {
-
-        } else if (self.running) {
-            self.timeElapsed = self.previousTimeElapsed + new Date().getTime() - self.startTime.getTime();
-            self.timeLeft = self.timerLength - self.timeElapsed;
-            if (self.timeLeft > 0) {
-                self.percentComplete = self.timeElapsed / self.timerLength * 100;
-            } else {
-                self.percentComplete = 100;
-                self.elapsed = true;
-            }
-        } else {
-            self.timeLeft = self.timerLength;
-            self.percentComplete = 0;
-        }
-        litRender(self.render(), self);
-    }
-
-    handleDelete() {
-
-    }
-
-    onInputChange(event: CustomEvent, self) {
-        self.timerLength = event.detail;
-        console.log(self.timerLength);
-    }
-
-    handleStartTimer() {
-        console.log(this.timerLength);
-        this.running = true;
-        this.startTime = new Date();
-        litRender(this.render(), this);
-    }
-
-    handleAddTimer() {
-        litRender(this.render(), this);
-    }
-
-    // time elapsed = time elapsed + new start time
-    handlebutton() {
-        if (this.running) {
-            if (this.elapsed) {
-                this.running = false;
-                this.elapsed = false;
-                this.previousTimeElapsed = 0;
-            } else if (this.paused) {
-                this.paused = false;
-                this.startTime = new Date();
-            }else{
-                this.paused = true;
-                this.previousTimeElapsed = this.timeElapsed;
-            }
-        } else {
-            this.running = true;
-            this.startTime = new Date();
-        }
-        litRender(this.render(), this);
+        //TODO why does it freeze up when I try to update it just when the properites are updated?
+        setInterval(() => litRender(this.render(), this), 10);
     }
 
     render() {
+        // TODO This is all good and clever but it only works if there is one of them. As soon as you add a second time-display then this css is going to change and its going to affect both of the time-displays because they both have the same classes and ids
+        // Obviously I would like to learn the best way to avoid that but for right now we only need one. So lets keep moving forward
+        if (!this.okToRender) {
+            return html``;
+        }
+        console.log('Its okay to render');
         return html`
             <style>
                 @import 'vars.css';
 
-                #timer-body {
-                    height: 100%;
-                }
                 #standin-timer {
                     position: absolute;
-                    top: 50px;
+                    top: ${this._radius/2}px;
                     width: 100%;
                     color: var(--activeColor);
                     font-size: 50pt;
@@ -115,21 +106,19 @@ class TIMETimeDispaly extends HTMLElement {
                     position: relative;
                     margin: 40px auto;
                     margin-top: 40px;
-                    width: 206px;
-                    height: 206px;
+                    width: ${this._width()}px;
+                    height: ${this._width()}px;
                 }
                 #progressbar {
                     transform: rotate(-90deg);
-                    width: 206px;
-                    height: 206px;
+                    width: ${this._width()}px;
+                    height: ${this._width()}px;
                 }
                 #progressbar circle {
-                    width: 150px;
-                    height: 150px; 
                     fill: none; 
-                    stroke-width: 6;
-                    stroke-dasharray: 630;
-                    stroke-dashoffset: 630;
+                    stroke-width: ${this._stroke};
+                    stroke-dasharray: ${this._circumference()};
+                    stroke-dashoffset: ${this._circumference()};
                     stroke-linecap: round; 
                 }
                 #progressbar circle:nth-child(1){ 
@@ -137,7 +126,7 @@ class TIMETimeDispaly extends HTMLElement {
                     stroke: var(--bodyColor); 
                 } 
                 #progressbar circle:nth-child(2){
-                    stroke-dashoffset: calc(630 - (630 * ${this.percentComplete}) / -100);
+                    stroke-dashoffset: calc(${this._circumference()} - (${this._circumference()} * ${this._percentComplete()}) / -100);
                     stroke: var(--activeColor);
                 }
                 .elapsed {
@@ -149,25 +138,17 @@ class TIMETimeDispaly extends HTMLElement {
                     }
                 }
             </style>
-            <div id="timer-body">
-                <div id="timers">
-                    <div class="timer">
-                        <svg id="progressbar" class="${(this.elapsed ? 'elapsed':'')}">
-                            <circle cx="103", cy="103" r="100"></circle>
-                            <circle cx="103", cy="103" r="100"></circle>
-                        </svg>
-                        <div id="standin-timer" class="${(this.paused ? 'elapsed':'')}">${(this.timeLeft < 0 ? '-': '')}${millisToHourMinSec(Math.abs(this.timeLeft))}</div>
-                    </div>
-                    <div id="sw-controls" class="row">
-                        <div class="four columns" @click=${() => this.handleDelete()}>Delete</div>
-                        <button class="four columns" @click=${() => this.handlebutton()}>start</button>
-                        <div class="four columns" @click=${() => this.handleAddTimer()}>Add timer</div>
-                    </div>
-                </div>
+            <div class="timer">
+                <svg id="progressbar" class="${(this._elapsed ? 'elapsed':'')}">
+                    <circle cx="${this._pos()}", cy="${this._pos()}" r="${this._radius}"></circle>
+                    <circle cx="${this._pos()}", cy="${this._pos()}" r="${this._radius}"></circle>
+                </svg>
+                <!-- TODO I like adding the 1000 ms to the timer so that it start with the time you put in and ends as 1 turns to zero instead of having a whole second where its at zero but the timer isn't elapsed. But there is still the problem that we have two whole seconds of what is displayed as zero. from 0.999 seconds to -0.999 seconds. How do I handle that -->
+                <div id="standin-timer" class="${(this._paused ? 'elapsed':'')}">${(this._timeLeft() < 0 ? '-': '')}${millisToHourMinSec(Math.abs(this._timeLeft() + 1000))}</div>
             </div>
         `;
     }
 
 }
 
-customElements.define('time-timer', TIMETimeDispaly);
+customElements.define('time-timedisplay', TIMETimeDispaly);
