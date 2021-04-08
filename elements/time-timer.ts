@@ -191,6 +191,9 @@ class TIMETimer extends HTMLElement {
                 .controls {
                     height: 40px;
                 }
+                #previous-button {
+                    text-align: right;
+                }
             </style>
             <div id="timer-body">
                 <!-- <time-timedisplay paused="true" elapsed="true" .paused=${true}></time-timedisplay> -->
@@ -209,8 +212,14 @@ class TIMETimer extends HTMLElement {
                     <div class="four columns" @click=${() => this.handleAddTimer()}>Add timer</div>
                 </div>
                 <div class="row" ?hidden=${state.currentDisplayType !== 'timers'}>
-                    <button class="six columns" @click=${() => this.handlePrevious()}>Previous Timer</button>
-                    <button class="six columns" @click=${() => this.handleNext()}>Next Timer</button>
+                    <div id="previous-button" class="six columns">
+                        &nbsp;
+                        <button ?hidden=${state.currentTimer === 0} @click=${() => this.handlePrevious()}>&#8592;</button>
+                    </div>
+                    <div class="six columns">
+                        <button ?hidden=${state.currentTimer === state.timers.length -1} @click=${() => this.handleNext()}>&#8594;</button>
+                        &nbsp;
+                    </div>
                 </div>
                 <br>
             </div>
