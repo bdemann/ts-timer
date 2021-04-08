@@ -10,12 +10,20 @@ export function formatTwoDigits(number: number) {
     else return numberString
 }
 
-export function millisToHourMinSec(millis: number) {
-    let hour = Math.floor(millis / 3.6e+6);
+export function millisToHourMinSecString(millis: number) {
+    let times = millisToHourMinSec(millis);
+    let hour = times[0];
+    let minute = times[1];
+    let second = times[2];
     let hourString = (hour > 0 ? hour.toString() + ':' : '');
-    let minute = Math.floor(millis / 60000) % 60;
     let minuteString = (minute > 0 ? minute.toString() + ':' : '');
-    let second = Math.floor(millis / 1000) % 60;
     let secondString = (minute > 0 ? formatTwoDigits(second): second.toString());
     return `${hourString}${minuteString}${secondString}`
+}
+
+export function millisToHourMinSec(millis: number) {
+    let hour = Math.floor(millis / 3.6e+6);
+    let minute = Math.floor(millis / 60000) % 60;
+    let second = Math.floor(millis / 1000) % 60;
+    return [hour, minute, second];
 }

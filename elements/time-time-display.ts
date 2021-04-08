@@ -4,7 +4,7 @@ import {
 } from 'lit-html'
 
 import {
-    millisToHourMinSec
+    millisToHourMinSecString
 } from '../ts/utils';
 
 class TIMETimeDispaly extends HTMLElement {
@@ -114,7 +114,7 @@ class TIMETimeDispaly extends HTMLElement {
                     height: ${this._width()}px;
                 }
                 #progressbar circle {
-                    fill: none; 
+                    fill: none;
                     stroke-width: ${this._stroke};
                     stroke-dasharray: ${this._circumference()};
                     stroke-dashoffset: ${this._circumference()};
@@ -143,7 +143,7 @@ class TIMETimeDispaly extends HTMLElement {
                     <circle cx="${this._pos()}", cy="${this._pos()}" r="${this._radius}"></circle>
                 </svg>
                 <!-- TODO I like adding the 1000 ms to the timer so that it start with the time you put in and ends as 1 turns to zero instead of having a whole second where its at zero but the timer isn't elapsed. But there is still the problem that we have two whole seconds of what is displayed as zero. from 0.999 seconds to -0.999 seconds. How do I handle that -->
-                <div id="standin-timer" class="${(this._paused ? 'elapsed':'')}">${(this._timeLeft() < 0 ? '-': '')}${millisToHourMinSec(Math.abs(this._timeLeft() + 1000))}</div>
+                <div id="standin-timer" class="${(this._paused ? 'elapsed':'')}">${(this._timeLeft() < 0 ? '-': '')}${millisToHourMinSecString(Math.abs(this._timeLeft() + 1000))}</div>
             </div>
         `;
     }

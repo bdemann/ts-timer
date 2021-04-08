@@ -3,124 +3,182 @@ import {
     render as litRender,
 } from 'lit-html'
 
+import {
+    createObjectStore
+} from 'reduxular'
+
 import './timer-timer-input'
 import './time-time-display'
+import { millisToHourMinSecString } from '../ts/utils';
 
 type displaytype = 'input' | 'timers';
-
-class Timer {
-    running: boolean;
+type State = Readonly<{
     runTime: number;
-    startTime: Date;
-    timerLength: number;
-    timeLeft: number;
-    timeElapsed: number;
-    elapsed: boolean;
-    paused: boolean;
-    previousTimeElapsed: number;
-
-    constructor () {
-        this.timeElapsed = 0;
-        this.previousTimeElapsed = 0;
-        this.running = false;
-        this.elapsed = false;
-        this.paused = false;
-    }
-
-}
-
-class TIMETimer extends HTMLElement {
     currentDisplayType: displaytype;
     currentTimer: number;
     timers: Timer[];
+}>;
+type Timer = Readonly<{
+    timerLength: number;
+    timeLeft: number;
+    timeElapsed: number;
+    startTime: Date;
+    previousTimeElapsed: number;
+    running: boolean;
+    elapsed: boolean;
+    paused: boolean;
+}>
 
-    constructor() {
-        super();
-        this.currentDisplayType = 'input';
-        this.timers = [new Timer()];
-        this.currentTimer = 0;
-    }
+const InitialState: State = {
+    runTime: 0,
+    currentDisplayType: 'input',
+    currentTimer: 0,
+    timers: [createNewTimer()]
+};
+
+class TIMETimer extends HTMLElement {
+
+    readonly store = createObjectStore(InitialState, (state) => litRender(this.render(state), this), this);
 
     connectedCallback() {
-        litRender(this.render(), this);
-        setInterval(() => this.updateTimer(this), 10);
+        setInterval(() => this.updateTimer(), 10);
     }
 
-    updateTimer(self: TIMETimer) {
-        self.timers.forEach((timer) => {
-                if (timer.paused) {
-
-                } else if (timer.running) {
-                    timer.timeElapsed = timer.previousTimeElapsed + new Date().getTime() - timer.startTime.getTime();
-                    timer.timeLeft = timer.timerLength - timer.timeElapsed;
-                    if (timer.timeLeft < 0) {
-                        timer.elapsed = true;
-                    }
-                } else {
-                    timer.timeLeft = timer.timerLength;
-                }
+    updateTimer() {
+        this.store.timers = this.store.timers.map((timer, index, array) => {
+            if (timer.paused) {
+                return timer;
+            } else if (timer.running) {
+                return {
+                    ...timer,
+                    timeElapsed: timer.previousTimeElapsed + new Date().getTime() - timer.startTime.getTime(),
+                    timeLeft: timer.timerLength - timer.timeElapsed,
+                    elapsed: timer.timeLeft < 0
+                };
+            } else {
+                return {
+                    ...timer,
+                    timeLeft: timer.timerLength
+                };
             }
-        )
-        litRender(self.render(), self);
+        });
     }
 
     handleDelete() {
-
+        if(this.store.timers.length - 1 < 1){
+            this.store.currentDisplayType = 'input'
+            this.store.timers = [createNewTimer()];
+        } else {
+            this.store.currentTimer = Math.max(0, this.store.currentTimer - 2);
+        }
+        this.store.timers = this.store.timers.filter((element, index) => {
+            return this.store.currentTimer + 1 != index;
+        });
     }
 
     handleCancel() {
-
+        this.store.currentTimer = Math.max(
+            0,
+            Math.min(this.store.currentTimer - 1, this.store.timers.length - 2)
+        );
+        this.store.currentDisplayType = 'timers';
+        this.store.timers = this.store.timers.filter((element, index, array) => {
+            return index != array.length - 1;
+        })
     }
 
-    onInputChange(event: CustomEvent, self: TIMETimer) {
-        self.timers[self.currentTimer].timerLength = event.detail;
+    onInputChange(event: CustomEvent) {
+        this.store.timers = this.store.timers.map((timer:Timer, index) => {
+            if (index === this.store.currentTimer) {
+                return {
+                    ...timer,
+                    timerLength: event.detail
+                };
+            };
+            return timer;
+        })
     }
 
     handleStartTimer() {
-        this.currentDisplayType = 'timers';
-        this.timers[this.currentTimer].running = true;
-        this.timers[this.currentTimer].startTime = new Date();
-        litRender(this.render(), this);
+        this.store.currentDisplayType = 'timers';
+        this.store.timers = this.store.timers.map((timer:Timer, index) => {
+            if (index === this.store.currentTimer) {
+                return {
+                    ...timer,
+                    running: true
+                };
+            }
+            return timer;
+        });
+        this.store.timers = this.store.timers.map((timer:Timer, index) => {
+            if (index === this.store.currentTimer) {
+                return {
+                    ...timer,
+                    startTime: new Date()
+                }
+            }
+            return timer;
+        });
     }
 
     handleAddTimer() {
-        this.timers.push(new Timer());
-        this.currentTimer = this.timers.length - 1;
-        this.currentDisplayType = 'input';
-        litRender(this.render(), this);
+        this.store.timers = [
+            ...this.store.timers,
+            createNewTimer()         
+        ];
+        this.store.currentTimer = this.store.timers.length - 1;
+        this.store.currentDisplayType = 'input';
     }
 
     handlePrevious() {
-        this.currentTimer = Math.max(0, this.currentTimer - 1);
+        this.store.currentTimer = Math.max(0, this.store.currentTimer - 1);
     }
 
     handleNext() {
-        this.currentTimer = Math.min(this.timers.length - 1, this.currentTimer + 1);
+        this.store.currentTimer = Math.min(this.store.timers.length - 1, this.store.currentTimer + 1);
     }
 
     // time elapsed = time elapsed + new start time
-    handlebutton(timer: Timer) {
-        if (timer.running) {
-            if (timer.elapsed) {
-                timer.running = false;
-                timer.elapsed = false;
-                timer.previousTimeElapsed = 0;
-                timer.timeElapsed = 0;
-            } else if (timer.paused) {
-                timer.paused = false;
-                timer.startTime = new Date();
-            }else{
-                timer.paused = true;
-                timer.previousTimeElapsed = timer.timeElapsed;
+    handlebutton() {
+        this.store.timers = this.store.timers.map((timer, index) => {
+            if (this.store.currentTimer === index) {
+                if (timer.running) {
+                    if (timer.elapsed) {
+                        return {
+                            ...timer,
+                            running: false,
+                            elapsed: false,
+                            previousTimeElapsed: 0,
+                            timeElapsed: 0
+                        }
+                    } else if (timer.paused) {
+                        return {
+                            ...timer,
+                            paused: false,
+                            startTime: new Date()
+                        }
+                    }
+                    return {
+                        ...timer,
+                        paused: true,
+                        previousTimeElapsed: timer.timeElapsed
+                    }
+                }
+                return {
+                    ...timer,
+                    running: true,
+                    startTime: new Date()
+                }
             }
-        } else {
-            timer.running = true;
-            timer.startTime = new Date();
-        }
-        litRender(this.render(), this);
+            return timer;
+        });
     }
 
-    render() {
+    onTestInputChange(event: CustomEvent, self: TIMETimer) {
+        console.log(event.detail)
+    }
+
+    render(state: State) {
         return html`
             <style>
                 @import 'vars.css';
@@ -130,22 +188,27 @@ class TIMETimer extends HTMLElement {
                 #timer-controls, #input-controls {
                     text-align: center;
                 }
+                .controls {
+                    height: 40px;
+                }
             </style>
             <div id="timer-body">
                 <!-- <time-timedisplay paused="true" elapsed="true" .paused=${true}></time-timedisplay> -->
-                <time-timerinput ?hidden=${this.currentDisplayType !== 'input'} @input=${(e:CustomEvent)=>this.onInputChange(e, this)}></time-timerinput>
-                <time-timedisplay ?hidden=${this.currentDisplayType !== 'timers'} .timerLength=${this.timers[this.currentTimer].timerLength} .elapsed=${this.timers[this.currentTimer].elapsed} .paused=${this.timers[this.currentTimer].paused} .radius=${100} .timeElapsed=${this.timers[this.currentTimer].timeElapsed}></time-timedisplay>
-                <div ?hidden=${this.currentDisplayType !== 'input'} id="input-controls" class="row">
-                    <div class="four columns" @click=${() => this.handleCancel()}>Cancel</div>
-                    <button class="four columns" @click=${() => this.handleStartTimer()}>Begin Timer</button>
+                <time-timerinput .value=${state.timers[state.currentTimer].timerLength} ?hidden=${state.currentDisplayType !== 'input'} @input=${(e:CustomEvent)=>this.onInputChange(e)}></time-timerinput>
+                <time-timedisplay ?hidden=${state.currentDisplayType !== 'timers'} .timerLength=${state.timers[state.currentTimer].timerLength} .elapsed=${state.timers[state.currentTimer].elapsed} .paused=${state.timers[state.currentTimer].paused} .radius=${100} .timeElapsed=${state.timers[state.currentTimer].timeElapsed}></time-timedisplay>
+                <div ?hidden=${state.currentDisplayType !== 'input'} id="input-controls" class="row controls">
+                    <div class="four columns" @click=${() => this.handleCancel()}>&nbsp;${(state.timers.length < 2 ? "" : 'Cancel')}</div>
+                    <button ?hidden=${state.timers[state.currentTimer].timerLength === 0} class="four columns" @click=${() => this.handleStartTimer()}>Begin Timer</button>
                     <div class="four columns">&nbsp;</div>
                 </div>
-                <div ?hidden=${this.currentDisplayType !== 'timers'} id="timer-controls" class="row">
+                <div ?hidden=${state.currentDisplayType !== 'timers'} id="timer-controls" class="row controls">
                     <div class="four columns" @click=${() => this.handleDelete()}>Delete</div>
-                    <button class="four columns" @click=${() => this.handlebutton(this.timers[this.currentTimer])}>start</button>
+                    <button class="four columns" @click=${() => this.handlebutton()}>
+                        ${state.timers[state.currentTimer].paused ? "Start" : state.timers[state.currentTimer].elapsed ? "Stop" : state.timers[state.currentTimer].running ? "Pause" : "Start"}
+                    </button>
                     <div class="four columns" @click=${() => this.handleAddTimer()}>Add timer</div>
                 </div>
-                <div class="row">
+                <div class="row" ?hidden=${state.currentDisplayType !== 'timers'}>
                     <button class="six columns" @click=${() => this.handlePrevious()}>Previous Timer</button>
                     <button class="six columns" @click=${() => this.handleNext()}>Next Timer</button>
                 </div>
@@ -154,6 +217,19 @@ class TIMETimer extends HTMLElement {
         `;
     }
 
+}
+
+function createNewTimer():Timer{
+    return {
+        timerLength: 0,
+        timeElapsed: 0,
+        startTime: new Date(),
+        previousTimeElapsed: 0,
+        running: false,
+        elapsed: true,
+        paused: false,
+        timeLeft: 0
+    }
 }
 
 customElements.define('time-timer', TIMETimer);

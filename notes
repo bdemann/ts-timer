@@ -73,3 +73,13 @@ Questions
 1) What is the best way to find packages that I want to use?
 1) What is a good IDE for Typescript? Is there one? I feel like one of the nice things about a good strongly typed language is that my ide can catch a lot of error for me... 
 1) Where does git go in all of this?
+
+
+################################################################################
+#                    Important Things to Remember                              #
+################################################################################
+map, filter, reduce
+
+map
+    take and array of size n and return an array of size n
+    it will do the lambda to each element on the array
