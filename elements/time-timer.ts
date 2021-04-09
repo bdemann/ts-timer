@@ -194,6 +194,10 @@ class TIMETimer extends HTMLElement {
                 #previous-button {
                     text-align: right;
                 }
+                #start-stop-pause-button {
+                    color: var(--activeColor);
+                    font-size: 45pt;
+                }
             </style>
             <div id="timer-body">
                 <!-- <time-timedisplay paused="true" elapsed="true" .paused=${true}></time-timedisplay> -->
@@ -206,9 +210,9 @@ class TIMETimer extends HTMLElement {
                 </div>
                 <div ?hidden=${state.currentDisplayType !== 'timers'} id="timer-controls" class="row controls">
                     <div class="four columns" @click=${() => this.handleDelete()}>Delete</div>
-                    <button class="four columns" @click=${() => this.handlebutton()}>
-                        ${state.timers[state.currentTimer].paused ? "Start" : state.timers[state.currentTimer].elapsed ? "Stop" : state.timers[state.currentTimer].running ? "Pause" : "Start"}
-                    </button>
+                    <span class="material-icons four columns" id="start-stop-pause-button" @click=${() => this.handlebutton()}>
+                        ${state.timers[state.currentTimer].paused ? "play_circle_filled" : state.timers[state.currentTimer].elapsed ? "cancel" : state.timers[state.currentTimer].running ? "pause_circle_filled" : "play_circle_filled"}
+                    </span>
                     <div class="four columns" @click=${() => this.handleAddTimer()}>Add timer</div>
                 </div>
                 <div class="row" ?hidden=${state.currentDisplayType !== 'timers'}>
