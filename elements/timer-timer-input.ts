@@ -4,47 +4,53 @@ import {
 } from 'lit-html'
 
 import {
+    createObjectStore
+} from 'reduxular'
+
+import {
     formatTwoDigits,
-    millisToHourMinSec
+    millisToHourMinSec,
+    hourMinSecToMillis
 } from '../ts/utils';
 
+type State = Readonly<{
+    hourInput: number;
+    minuteInput: number;
+    secondInput: number;
+    input: number[];
+}>;
+
+const InitialState: State = {
+    hourInput: 0,
+    minuteInput: 0,
+    secondInput: 0,
+    input: []
+}
+
 class TIMETimerInput extends HTMLElement {
-    private _hourInput: number;
-    private _minuteInput: number;
-    private _secondInput: number;
-    private _input: number[];
+
+    readonly store = createObjectStore(InitialState, (state) => litRender(this.render(state), this.shadowRoot), this);
+    readonly shadow = this.attachShadow({
+        mode: 'open'
+    })
 
     get value() {
         return this.convertTimeToMillis();
     }
     set value(value: number) {
-        this._input = this.convertTimeToInput(value);
+        if (value > 0){
+            return
+        }
+        this.store.input = this.convertTimeToInput(value);
         this.convertInputToTime();
-        litRender(this.render(), this);
-    }
-
-    constructor() {
-        super();
-        this._hourInput = 0;
-        this._minuteInput = 0;
-        this._secondInput = 0;
-        this._input = [];
-    }
-
-    connectedCallback() {
-        litRender(this.render(), this);
     }
 
     convertTimeToMillis() {
-        let millis = 0;
-        millis += this._hourInput * 3.6e+6;
-        millis += this._minuteInput * 60000;
-        millis += this._secondInput * 1000;
-        return millis
-    }
-
-    get inputTime() {
-        return this.convertTimeToMillis();
+        return hourMinSecToMillis(
+            this.store.hourInput,
+            this.store.minuteInput,
+            this.store.secondInput
+        );
     }
 
     convertTimeToInput(time: number) {
@@ -82,52 +88,63 @@ class TIMETimerInput extends HTMLElement {
     }
 
     convertInputToTime() {
-        if (this._input.length > 0) {
-            this._secondInput = this._input[0];
+        if (this.store.input.length > 0) {
+            this.store.secondInput = this.store.input[0];
         } else {
-            this._secondInput = 0;
+            this.store.secondInput = 0;
         }
-        if (this._input.length > 1) {
-           this._secondInput += this._input[1] * 10;
+        if (this.store.input.length > 1) {
+           this.store.secondInput += this.store.input[1] * 10;
         }
-        if (this._input.length > 2) {
-            this._minuteInput = this._input[2];
+        if (this.store.input.length > 2) {
+            this.store.minuteInput = this.store.input[2];
         } else {
-            this._minuteInput = 0;
+            this.store.minuteInput = 0;
         }
-        if (this._input.length > 3) {
-            this._minuteInput += this._input[3] * 10;
+        if (this.store.input.length > 3) {
+            this.store.minuteInput += this.store.input[3] * 10;
         }
-        if (this._input.length > 4) {
-            this._hourInput = this._input[4];
+        if (this.store.input.length > 4) {
+            this.store.hourInput = this.store.input[4];
         } else {
-            this._hourInput = 0;
+            this.store.hourInput = 0;
         }
-        if (this._input.length > 5) {
-            this._hourInput += this._input[5] * 10;
+        if (this.store.input.length > 5) {
+            this.store.hourInput += this.store.input[5] * 10;
         }
     }
 
     handleBackspace()  {
-        this._input.splice(0, 1);
+        this.store.input = this.store.input.filter((element, index) => {
+            return index != 0
+        })
         this.convertInputToTime();
-        litRender(this.render(), this);
         this.dispatchEvent(new CustomEvent('input', {detail: this.convertTimeToMillis()}));
     }
 
     handleInput(input: number) {
-        if (this._input.length >= 6) {
+        if (this.store.input.length >= 6) {
             return;
         }
-        this._input.splice(0, 0, input);
+        if (this.store.input.length === 0 && input === 0) {
+            return;
+        }
+        this.store.input = [
+            input,
+            ...this.store.input
+        ]
         this.convertInputToTime();
 
-        litRender(this.render(), this);
         this.dispatchEvent(new CustomEvent('input', {detail: this.convertTimeToMillis()}));
     }
 
-    render() {
+    render(state: State) {
         return html`
+            <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        rel="stylesheet">
+            <link rel="stylesheet" href="css/normalize.css">
+            <link rel="stylesheet" href="css/skeleton.css">
+            <link rel="stylesheet" href="css/styles.css">
             <style>
                 @import 'vars.css';
 
@@ -157,17 +174,17 @@ class TIMETimerInput extends HTMLElement {
                 }
             </style>
             <div id="timer-input">
-                <div id="timer-length-input" class="${(this._input.length > 0 ? 'active' : 'inactive')}">
+                <div id="timer-length-input" class="${(state.input.length > 0 ? 'active' : 'inactive')}">
                     <span class="input-number-display">
-                        ${formatTwoDigits(this._hourInput)}
+                        ${formatTwoDigits(state.hourInput)}
                     </span>
                     <span class="input-unit-display">h</span>
                     <span class="input-number-display">
-                        ${formatTwoDigits(this._minuteInput)}
+                        ${formatTwoDigits(state.minuteInput)}
                     </span>
                     <span class="input-unit-display">m</span>
                     <span class="input-number-display">
-                        ${formatTwoDigits(this._secondInput)}
+                        ${formatTwoDigits(state.secondInput)}
                     </span>
                     <span class="input-unit-display">s</span>
                     &nbsp;

@@ -9,7 +9,6 @@ import {
 
 import './timer-timer-input'
 import './time-time-display'
-import { millisToHourMinSecString } from '../ts/utils';
 
 type displaytype = 'input' | 'timers';
 type State = Readonly<{
@@ -18,6 +17,7 @@ type State = Readonly<{
     currentTimer: number;
     timers: Timer[];
 }>;
+type Actions = DELETE_TIMER
 type Timer = Readonly<{
     timerLength: number;
     timeLeft: number;
@@ -27,6 +27,10 @@ type Timer = Readonly<{
     running: boolean;
     elapsed: boolean;
     paused: boolean;
+}>
+type DELETE_TIMER = Readonly<{
+    type: 'DELETE_ACTION',
+    timer_index: number
 }>
 
 const InitialState: State = {
@@ -38,7 +42,33 @@ const InitialState: State = {
 
 class TIMETimer extends HTMLElement {
 
-    readonly store = createObjectStore(InitialState, (state) => litRender(this.render(state), this), this);
+    readonly store = createObjectStore(InitialState, (state) => litRender(this.render(state), this.shadowRoot), this, (state: State, action:Actions) => {
+        if (action.type === 'DELETE_ACTION') {
+            let newTimers = state.timers.filter((element, index) => {
+                return state.currentTimer != index;
+            });
+            if(newTimers.length < 1){
+                let newDisplay: displaytype = 'input';
+                return {
+                    ...state,
+                    // currentDisplayType: 'input',
+                    // TODO Why doesn't this work?
+                    currentDisplayType: newDisplay,
+                    timers: [createNewTimer()]
+                }
+            } else {
+                return {
+                    ...state,
+                    currentTimer: Math.max(0, state.currentTimer - 1),
+                    timers: newTimers
+                }
+            }
+        }
+        return state;
+    });
+    readonly shadow = this.attachShadow({
+        mode: 'open'
+    })
 
     connectedCallback() {
         setInterval(() => this.updateTimer(), 10);
@@ -65,15 +95,12 @@ class TIMETimer extends HTMLElement {
     }
 
     handleDelete() {
-        if(this.store.timers.length - 1 < 1){
-            this.store.currentDisplayType = 'input'
-            this.store.timers = [createNewTimer()];
-        } else {
-            this.store.currentTimer = Math.max(0, this.store.currentTimer - 2);
-        }
-        this.store.timers = this.store.timers.filter((element, index) => {
-            return this.store.currentTimer + 1 != index;
-        });
+        //this.querySelector()
+        //this.shadow.querySelector()
+        this.store.dispatch({
+            type: 'DELETE_ACTION',
+            timer_index: this.store.currentTimer,
+        })
     }
 
     handleCancel() {
@@ -180,6 +207,11 @@ class TIMETimer extends HTMLElement {
 
     render(state: State) {
         return html`
+            <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        rel="stylesheet">
+            <link rel="stylesheet" href="css/normalize.css">
+            <link rel="stylesheet" href="css/skeleton.css">
+            <link rel="stylesheet" href="css/styles.css">
             <style>
                 @import 'vars.css';
                 #timer-body {

@@ -16,9 +16,17 @@ export function millisToHourMinSecString(millis: number) {
     let minute = times[1];
     let second = times[2];
     let hourString = (hour > 0 ? hour.toString() + ':' : '');
-    let minuteString = (minute > 0 ? minute.toString() + ':' : '');
-    let secondString = (minute > 0 ? formatTwoDigits(second): second.toString());
+    let minuteString = (minute > 0 || hour > 0 ? (hour > 0 ? formatTwoDigits(minute) : minute.toString()) + ':' : '');
+    let secondString = (minute > 0 || hour > 0 ? formatTwoDigits(second): second.toString());
     return `${hourString}${minuteString}${secondString}`
+}
+
+export function hourMinSecToMillis(hour, minute, second) {
+    let millis = 0;
+    millis += hour * 3.6e+6;
+    millis += minute * 60000;
+    millis += second * 1000;
+    return millis
 }
 
 export function millisToHourMinSec(millis: number) {
@@ -27,3 +35,4 @@ export function millisToHourMinSec(millis: number) {
     let second = Math.floor(millis / 1000) % 60;
     return [hour, minute, second];
 }
+
