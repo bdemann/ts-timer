@@ -50,13 +50,31 @@ class TIMEApp extends HTMLElement {
             @import 'vars.css';
 
             #app-menu {
-                padding: 5px;
                 background-color: #36373a;
+                box-sizing: border-box;
+                padding: 8px 15px;
+                width: 100%;
+                font-size: 0;
+
+                position: fixed;
+                bottom: 0;
+
+                overflow: hidden;
+            }
+
+            #app-nav {
+                max-width: 500px;
+                min-width: 275px;
+                margin: auto;
             }
 
             .app-button {
                 color: var(--inactiveColor);
                 text-align: center;
+                font-size: 12pt;
+            }
+            .app-button-icon {
+                font-size: 20pt;
             }
 
             .app-button.active {
@@ -68,42 +86,48 @@ class TIMEApp extends HTMLElement {
             }
 
             #app-body {
-                height: 800px;
+                box-sizing: border-box;
+                padding-top:10px;
+                height: 100%;
+                max-width: 500px;
+                min-width: 275px;
+                margin: auto;
             }
 
             .app-title {
                 color: white;
                 text-align: center;
-                font-size: 14pt;
+                font-size: 12pt;
             }
 
         </style>
 
-        <div id="app" class="container">
-            <div id="app-body">
-                <div class='app-title'>${capitalize(this.currentDisplayType)}</div>
-                <time-alarm id="alarm-app" ?hidden=${this.currentDisplayType !== 'alarm'}></time-alarm>
-                <time-clock id="clock-app" ?hidden=${this.currentDisplayType !== 'clock'}></time-clock>
-                <time-timer id="timer-app" ?hidden=${this.currentDisplayType !== 'timer'}></time-timer>
-                <time-stopwatch id="stopwatch-app" ?hidden=${this.currentDisplayType !== 'stopwatch'}></time-stopwatch>
-            </div>
-            <div id="app-menu" class="row">
-                <div class="app-button three columns ${this.isSelected("alarm")}" id="alarm-button" @click="${() => this.setDisplay("alarm")}">
-                    <span class="material-icons">access_alarm</span>
+        <div id="app-body">
+            <div class='app-title'>${capitalize(this.currentDisplayType)}</div>
+            <time-alarm id="alarm-app" ?hidden=${this.currentDisplayType !== 'alarm'}></time-alarm>
+            <time-clock id="clock-app" ?hidden=${this.currentDisplayType !== 'clock'}></time-clock>
+            <time-timer id="timer-app" ?hidden=${this.currentDisplayType !== 'timer'}></time-timer>
+            <time-stopwatch id="stopwatch-app" ?hidden=${this.currentDisplayType !== 'stopwatch'}></time-stopwatch>
+        </div>
+        <div id="app-menu">
+            <div id="app-nav" class="row">
+                <span class="app-button cols ${this.isSelected("alarm")}" id="alarm-button" @click="${() => this.setDisplay("alarm")}">
+                    <span class="material-icons app-button-icon">access_alarm</span>
                     <br>Alarm
-                </div>
-                <div class="app-button three columns ${this.isSelected("clock")}" id="clock-button" @click=${() => this.setDisplay("clock")}>
-                    <span class="material-icons">schedule</span>
+                </span>
+                <span class="app-button cols ${this.isSelected("clock")}" id="clock-button" @click=${() => this.setDisplay("clock")}>
+                    <span class="material-icons app-button-icon">schedule</span>
                     <br>Clock
-                </div>
-                <div class="app-button three columns ${this.isSelected("timer")}" id="timer-button" @click=${() => this.setDisplay("timer")}>
-                    <span class="material-icons">hourglass_bottom</span>
+                </span>
+                <span class="app-button cols ${this.isSelected("timer")}" id="timer-button" @click=${() => this.setDisplay("timer")}>
+                    <span class="material-icons app-button-icon">hourglass_bottom</span>
                     <br>Timer
-                </div>
-                <div class="app-button three columns ${this.isSelected("stopwatch")}" id="stopwatch-button" @click=${() => this.setDisplay("stopwatch")}>
-                    <span class="material-icons">timer</span>
+                </span>
+                <span class="app-button cols ${this.isSelected("stopwatch")}" id="stopwatch-button" @click=${() => this.setDisplay("stopwatch")}>
+                    <span class="material-icons app-button-icon">timer</span>
                     <br>Stopwatch
-                </div>
+                </span>
+                <span class="stretch"></span>
             </div>
         </div>
         `;
