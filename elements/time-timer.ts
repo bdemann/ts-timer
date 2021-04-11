@@ -209,8 +209,6 @@ class TIMETimer extends HTMLElement {
         return html`
             <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
         rel="stylesheet">
-            <link rel="stylesheet" href="css/normalize.css">
-            <link rel="stylesheet" href="css/skeleton.css">
             <link rel="stylesheet" href="css/styles.css">
             <style>
                 @import 'vars.css';
@@ -218,15 +216,17 @@ class TIMETimer extends HTMLElement {
                     height: 100%;
                 }
                 #timer-controls, #input-controls {
-                    text-align: center;
+                    padding: 20px;
+                    box-sizing: border-box;
+                    /* text-align: center; */
                 }
                 .controls {
-                    height: 40px;
+                    text-align: center;
                 }
                 #previous-button {
                     text-align: right;
                 }
-                #start-stop-pause-button {
+                .start-stop-pause-button {
                     color: var(--activeColor);
                     font-size: 45pt;
                 }
@@ -236,26 +236,31 @@ class TIMETimer extends HTMLElement {
                 <time-timerinput .value=${state.timers[state.currentTimer].timerLength} ?hidden=${state.currentDisplayType !== 'input'} @input=${(e:CustomEvent)=>this.onInputChange(e)}></time-timerinput>
                 <time-timedisplay ?hidden=${state.currentDisplayType !== 'timers'} .timerLength=${state.timers[state.currentTimer].timerLength} .elapsed=${state.timers[state.currentTimer].elapsed} .paused=${state.timers[state.currentTimer].paused} .radius=${100} .timeElapsed=${state.timers[state.currentTimer].timeElapsed}></time-timedisplay>
                 <div ?hidden=${state.currentDisplayType !== 'input'} id="input-controls" class="row controls">
-                    <div class="four columns" @click=${() => this.handleCancel()}>&nbsp;${(state.timers.length < 2 ? "" : 'Cancel')}</div>
-                    <button ?hidden=${state.timers[state.currentTimer].timerLength === 0} class="four columns" @click=${() => this.handleStartTimer()}>Begin Timer</button>
-                    <div class="four columns">&nbsp;</div>
+                    <div class="three cols" @click=${() => this.handleCancel()}>&nbsp;${(state.timers.length < 2 ? "" : 'Cancel')}</div>
+                    <span ?hidden=${state.timers[state.currentTimer].timerLength === 0} class="material-icons cols three start-stop-pause-button" @click=${() => this.handleStartTimer()}>
+                        ${state.timers[state.currentTimer].timerLength === 0 ? "" : "play_circle_filled"}
+                    </span>
+                    <div class="three cols">&nbsp;</div>
+                    <span class="stretch"></span>
                 </div>
                 <div ?hidden=${state.currentDisplayType !== 'timers'} id="timer-controls" class="row controls">
-                    <div class="four columns" @click=${() => this.handleDelete()}>Delete</div>
-                    <span class="material-icons four columns" id="start-stop-pause-button" @click=${() => this.handlebutton()}>
+                    <div class="three cols" @click=${() => this.handleDelete()}>Delete</div>
+                    <span class="material-icons three cols start-stop-pause-button" @click=${() => this.handlebutton()}>
                         ${state.timers[state.currentTimer].paused ? "play_circle_filled" : state.timers[state.currentTimer].elapsed ? "cancel" : state.timers[state.currentTimer].running ? "pause_circle_filled" : "play_circle_filled"}
                     </span>
-                    <div class="four columns" @click=${() => this.handleAddTimer()}>Add timer</div>
+                    <div class="three cols" @click=${() => this.handleAddTimer()}>Add timer</div>
+                    <span class="stretch"></span>
                 </div>
                 <div class="row" ?hidden=${state.currentDisplayType !== 'timers'}>
-                    <div id="previous-button" class="six columns">
+                    <div id="previous-button" class="two cols">
                         &nbsp;
                         <button ?hidden=${state.currentTimer === 0} @click=${() => this.handlePrevious()}>&#8592;</button>
                     </div>
-                    <div class="six columns">
+                    <div class="two cols">
                         <button ?hidden=${state.currentTimer === state.timers.length -1} @click=${() => this.handleNext()}>&#8594;</button>
                         &nbsp;
                     </div>
+                    <span class="stretch"></span>
                 </div>
                 <br>
             </div>

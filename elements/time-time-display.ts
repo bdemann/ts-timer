@@ -95,8 +95,6 @@ class TIMETimeDispaly extends HTMLElement {
         return html`
             <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
         rel="stylesheet">
-            <link rel="stylesheet" href="css/normalize.css">
-            <link rel="stylesheet" href="css/skeleton.css">
             <link rel="stylesheet" href="css/styles.css">
             <style>
                 @import 'vars.css';

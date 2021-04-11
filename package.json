@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "",
   "scripts": {
-    "start": "zwitterion"
+    "start": "zwitterion --port 443"
   },
   "keywords": [],
   "author": "Benjamin DeMann <benjamin.demann@gmail.com>",

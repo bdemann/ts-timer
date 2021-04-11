@@ -4,8 +4,32 @@
 
 body {
     background-color: var(--backgroundColor);
-    max-width: 500px;
     margin: auto;
     font-family: 'Open Sans', sans-serif;
     color: var(--bodyColor);
+}
+
+.row {
+    text-align: justify;
+    text-justify: distribute-all-lines;
+}
+
+.cols {
+    vertical-align: top;
+    display: inline-block;
+}
+
+.two {
+    width: 45%;
+}
+
+.three {
+    width: 30%;
+}
+
+.stretch {
+    width: 100%;
+    display: inline-block;
+    font-size: 0;
+    line-height: 0;
 }
