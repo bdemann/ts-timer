@@ -39,10 +39,16 @@ const InitialState: State = {
     currentTimer: 0,
     timers: [createNewTimer()]
 };
+const InitialStateTest: State = {
+    runTime: 0,
+    currentDisplayType: 'timers',
+    currentTimer: 0,
+    timers: [createNewTestTimer()]
+};
 
 class TIMETimer extends HTMLElement {
 
-    readonly store = createObjectStore(InitialState, (state) => litRender(this.render(state), this.shadowRoot), this, (state: State, action:Actions) => {
+    readonly store = createObjectStore(InitialStateTest, (state) => litRender(this.render(state), this.shadowRoot), this, (state: State, action:Actions) => {
         if (action.type === 'DELETE_ACTION') {
             let newTimers = state.timers.filter((element, index) => {
                 return state.currentTimer != index;
@@ -248,14 +254,16 @@ class TIMETimer extends HTMLElement {
                         <div class="control-button" @click=${() => this.handleAddTimer()}>Add timer</div>
                     </div>
                 </div>
-                <div ?hidden=${state.currentDisplayType !== 'timers'}>
-                    <div id="previous-button">
-                        &nbsp;
-                        <button ?hidden=${state.currentTimer === 0} @click=${() => this.handlePrevious()}>&#8592;</button>
-                    </div>
-                    <div>
-                        <button ?hidden=${state.currentTimer === state.timers.length -1} @click=${() => this.handleNext()}>&#8594;</button>
-                        &nbsp;
+                <div id="timer-nav" ?hidden=${state.currentDisplayType !== 'timers'}>
+                    <div class="row" >
+                        <div class="col" id="previous-button">
+                            &nbsp;
+                            <button ?hidden=${state.currentTimer === 0} @click=${() => this.handlePrevious()}>&#8592;</button>
+                        </div>
+                        <div class="col">
+                            <button ?hidden=${state.currentTimer === state.timers.length -1} @click=${() => this.handleNext()}>&#8594;</button>
+                            &nbsp;
+                        </div>
                     </div>
                 </div>
                 <br>
@@ -273,6 +281,18 @@ function createNewTimer():Timer{
         previousTimeElapsed: 0,
         running: false,
         elapsed: true,
+        paused: false,
+        timeLeft: 0
+    }
+}
+function createNewTestTimer():Timer{
+    return {
+        timerLength: 10000,
+        timeElapsed: 0,
+        startTime: new Date(),
+        previousTimeElapsed: 0,
+        running: false,
+        elapsed: false,
         paused: false,
         timeLeft: 0
     }
