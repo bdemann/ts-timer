@@ -93,6 +93,23 @@ class TIMETimeDispaly extends HTMLElement {
         return 2 * Math.PI * this.store.radius;
     }
 
+    
+    get value() {
+        return this.store.buttonLabel;
+    }
+    set buttonLabel(buttonLabel: number) {
+        this.store.buttonLabel = buttonLabel;
+    }
+
+
+    // Handlers
+    handleButton() {
+        this.dispatchEvent(new CustomEvent('button'));
+    }
+    handleLabel() {
+        this.dispatchEvent(new CustomEvent('label'));
+    }
+
     render(state:State) {
         // TODO This is all good and clever but it only works if there is one of them. As soon as you add a second time-display then this css is going to change and its going to affect both of the time-displays because they both have the same classes and ids
         // Obviously I would like to learn the best way to avoid that but for right now we only need one. So lets keep moving forward
@@ -163,7 +180,7 @@ class TIMETimeDispaly extends HTMLElement {
                     <circle cx="${this._pos()}", cy="${this._pos()}" r="${this.store.radius}"></circle>
                 </svg>
                 <div id="display-text">
-                    <div id="label">${state.label}</div>
+                    <div id="label" @click=${() => this.handleLabel()}>${state.label}</div>
                     <!-- TODO I like adding the 1000 ms to the timer so that it start with the time you put in and ends as 1 turns to zero instead of having a whole second where its at zero but the timer isn't elapsed.
                     But there is still the problem that we have two whole seconds of what is displayed as zero. from 0.999 seconds to -0.999 seconds. 
                     How do I handle that. One hack I am trying is to only add those 999 when we are positive still. It still feels hacky. This whole thing feels hacky-->
@@ -171,7 +188,7 @@ class TIMETimeDispaly extends HTMLElement {
                     <div id="standin-timer" class="${(this.store.paused ? 'elapsed':'')}">
                         ${(this._timeLeft() < 0 ? '-': '')}${millisToHourMinSecString(Math.abs(this._timeLeft() + (this._timeLeft() < 0 ? 0 : 999)))}
                     </div>
-                    <div id="button">${state.buttonLabel}</div>
+                    <div id="button" @click=${() => this.handleButton()}>${state.buttonLabel}</div>
                 </div>
             </div>
         `;

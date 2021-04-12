@@ -19,6 +19,7 @@ type State = Readonly<{
 }>;
 type Actions = DELETE_TIMER
 type Timer = Readonly<{
+    origTimerLength: number;
     timerLength: number;
     timeLeft: number;
     timeElapsed: number;
@@ -138,17 +139,10 @@ class TIMETimer extends HTMLElement {
             if (index === this.store.currentTimer) {
                 return {
                     ...timer,
-                    running: true
+                    running: true,
+                    startTime: new Date(),
+                    origTimerLength: timer.timerLength
                 };
-            }
-            return timer;
-        });
-        this.store.timers = this.store.timers.map((timer:Timer, index) => {
-            if (index === this.store.currentTimer) {
-                return {
-                    ...timer,
-                    startTime: new Date()
-                }
             }
             return timer;
         });
@@ -178,11 +172,7 @@ class TIMETimer extends HTMLElement {
                 if (timer.running) {
                     if (timer.elapsed) {
                         return {
-                            ...timer,
-                            running: false,
-                            elapsed: false,
-                            previousTimeElapsed: 0,
-                            timeElapsed: 0
+                            ...resetTimer(timer),
                         }
                     } else if (timer.paused) {
                         return {
@@ -200,15 +190,39 @@ class TIMETimer extends HTMLElement {
                 return {
                     ...timer,
                     running: true,
-                    startTime: new Date()
+                    startTime: new Date(),
+                    origTimerLength: timer.timerLength
                 }
             }
             return timer;
         });
     }
 
-    onTestInputChange(event: CustomEvent, self: TIMETimer) {
-        console.log(event.detail)
+    handleDisplayButton() {
+        // If running add a minute, if paused reset the timer
+        if (this.store.timers[this.store.currentTimer].running && !this.store.timers[this.store.currentTimer].paused) {
+            this.store.timers = this.store.timers.map((timer, index) => {
+                if (this.store.currentTimer === index) {
+                    return {
+                        ...timer,
+                        timerLength: timer.timerLength + 60 * 1000
+                    }
+                }
+                return timer;
+            });
+        } else {
+            this.store.timers = this.store.timers.map((timer, index) => {
+                if (this.store.currentTimer === index) {
+                    return {
+                        ...resetTimer(timer),
+                    }
+                }
+                return timer;
+            });
+        }
+    }
+    handleDisplayLabel() {
+        console.log("the display label was pressed");
     }
 
     render(state: State) {
@@ -227,7 +241,17 @@ class TIMETimer extends HTMLElement {
             </style>
             <div id="timer-body">
                 <time-timerinput .value=${state.timers[state.currentTimer].timerLength} ?hidden=${state.currentDisplayType !== 'input'} @input=${(e:CustomEvent)=>this.onInputChange(e)}></time-timerinput>
-                <time-timedisplay ?hidden=${state.currentDisplayType !== 'timers'} .timerLength=${state.timers[state.currentTimer].timerLength} .elapsed=${state.timers[state.currentTimer].elapsed} .paused=${state.timers[state.currentTimer].paused} .radius=${100} .timeElapsed=${state.timers[state.currentTimer].timeElapsed}></time-timedisplay>
+                <time-timedisplay 
+                    .buttonLabel=${state.timers[state.currentTimer].running && !state.timers[state.currentTimer].paused ? "+1:00" : "Reset"}
+                    @button=${() => this.handleDisplayButton()}
+                    @label=${() => this.handleDisplayLabel()}
+                    ?hidden=${state.currentDisplayType !== 'timers'}
+                    .timerLength=${state.timers[state.currentTimer].timerLength}
+                    .elapsed=${state.timers[state.currentTimer].elapsed}
+                    .paused=${state.timers[state.currentTimer].paused}
+                    .radius=${100}
+                    .timeElapsed=${state.timers[state.currentTimer].timeElapsed}>
+                </time-timedisplay>
                 <div ?hidden=${state.currentDisplayType !== 'input'}>
                     <div id="input-controls" class="row controls">
                         <div class="control-button" @click=${() => this.handleCancel()}>&nbsp;${(state.timers.length < 2 ? "" : 'Cancel')}</div>
@@ -275,6 +299,7 @@ class TIMETimer extends HTMLElement {
 
 function createNewTimer():Timer{
     return {
+        origTimerLength: 0,
         timerLength: 0,
         timeElapsed: 0,
         startTime: new Date(),
@@ -285,8 +310,22 @@ function createNewTimer():Timer{
         timeLeft: 0
     }
 }
+function resetTimer(timer:Timer):Timer {
+    return {
+        ...timer,
+        timerLength: timer.origTimerLength,
+        timeElapsed: 0,
+        startTime: new Date(),
+        previousTimeElapsed: 0,
+        running: false,
+        elapsed: false,
+        paused: false,
+        timeLeft: 0
+    }
+}
 function createNewTestTimer():Timer{
     return {
+        origTimerLength: 0,
         timerLength: 10000,
         timeElapsed: 0,
         startTime: new Date(),
