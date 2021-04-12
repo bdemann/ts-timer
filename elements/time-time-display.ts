@@ -19,6 +19,8 @@ type State = Readonly<{
     runTime: number,
     timerLength: number,
     timeElapsed: number,
+    label: string,
+    buttonLabel: string
 }>;
 
 const InitialState: State = {
@@ -29,6 +31,8 @@ const InitialState: State = {
     runTime: 0,
     timeElapsed: 0,
     timerLength: 100000,
+    label: 'Label',
+    buttonLabel: '+1:00'
 };
 
 class TIMETimeDispaly extends HTMLElement {
@@ -101,11 +105,21 @@ class TIMETimeDispaly extends HTMLElement {
 
                 #standin-timer {
                     position: absolute;
-                    top: ${this._timeLeft() > 3.6e+7 - 1000 ? 64 : this._timeLeft() > 3.6e+6 - 1000 ? 60 : 50}px;
+                    top: ${this._timeLeft() > 3.6e+7 - 1000 ? 71 : this._timeLeft() > 3.6e+6 - 1000 ? 65 : 55}px;
                     width: 100%;
                     color: var(--activeColor);
                     font-size: ${this._timeLeft() > 3.6e+7 - 1000 ? 34 : this._timeLeft() > 3.6e+6 - 1000 ? 40 : 50}pt;
                     text-align: center;
+                }
+                #label {
+                    position: absolute;
+                    top: 30px;
+                    left: 80px;
+                }
+                #button {
+                    position: absolute;
+                    left: 80px;
+                    bottom: 30px;
                 }
                 .timer {
                     position: relative;
@@ -148,12 +162,16 @@ class TIMETimeDispaly extends HTMLElement {
                     <circle cx="${this._pos()}", cy="${this._pos()}" r="${this.store.radius}"></circle>
                     <circle cx="${this._pos()}", cy="${this._pos()}" r="${this.store.radius}"></circle>
                 </svg>
-                <!-- TODO I like adding the 1000 ms to the timer so that it start with the time you put in and ends as 1 turns to zero instead of having a whole second where its at zero but the timer isn't elapsed.
-                But there is still the problem that we have two whole seconds of what is displayed as zero. from 0.999 seconds to -0.999 seconds. 
-                How do I handle that. One hack I am trying is to only add those 999 when we are positive still. It still feels hacky. This whole thing feels hacky-->
-                ${""/* By doing 999 instead of 1000 then it won't ever display to the user what we are up to.*/}
-                <div id="standin-timer" class="${(this.store.paused ? 'elapsed':'')}">
-                    ${(this._timeLeft() < 0 ? '-': '')}${millisToHourMinSecString(Math.abs(this._timeLeft() + (this._timeLeft() < 0 ? 0 : 999)))}
+                <div id="display-text">
+                    <div id="label">${state.label}</div>
+                    <!-- TODO I like adding the 1000 ms to the timer so that it start with the time you put in and ends as 1 turns to zero instead of having a whole second where its at zero but the timer isn't elapsed.
+                    But there is still the problem that we have two whole seconds of what is displayed as zero. from 0.999 seconds to -0.999 seconds. 
+                    How do I handle that. One hack I am trying is to only add those 999 when we are positive still. It still feels hacky. This whole thing feels hacky-->
+                    ${""/* By doing 999 instead of 1000 then it won't ever display to the user what we are up to.*/}
+                    <div id="standin-timer" class="${(this.store.paused ? 'elapsed':'')}">
+                        ${(this._timeLeft() < 0 ? '-': '')}${millisToHourMinSecString(Math.abs(this._timeLeft() + (this._timeLeft() < 0 ? 0 : 999)))}
+                    </div>
+                    <div id="button">${state.buttonLabel}</div>
                 </div>
             </div>
         `;
