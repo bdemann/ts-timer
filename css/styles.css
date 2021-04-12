@@ -10,13 +10,16 @@ body {
 }
 
 .row {
-    text-align: justify;
-    text-justify: distribute-all-lines;
+    display: flex;
+    align-items: justify;
+    justify-content: center;
+    /* text-justify: distribute-all-lines; */
 }
 
 .cols {
-    vertical-align: top;
-    display: inline-block;
+    /* vertical-align: top;
+    display: inline-block; */
+    flex: 1;
 }
 
 .two {
@@ -27,9 +30,26 @@ body {
     width: 30%;
 }
 
-.stretch {
+/* Make sure all app controls have the same location and layout */
+.controls {
+    padding: 0 20px;
+    box-sizing: border-box;
+    text-align: center;
+
+    position: fixed;
+    bottom: 80px;
     width: 100%;
-    display: inline-block;
-    font-size: 0;
-    line-height: 0;
+    max-width: 500px;
+    height: 60px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.control-button {
+    flex: 1;
+}
+.main-button {
+    color: var(--activeColor);
+    font-size: 45pt;
 }

@@ -25,28 +25,28 @@ class TIMEAlarm extends HTMLElement {
             </style>
             <div id="alarm-body">
                 <div class="alarm">
-                    <div class="alarm-header row">
-                        <div class="alarm-time on ten columns">6:15 am</div>
-                        <div class="alarm-switch on two columns"><i class="material-icons">toggle-on</i></div>
+                    <div class="alarm-header">
+                        <div class="alarm-time on">6:15 am</div>
+                        <div class="alarm-switch on"><i class="material-icons">toggle-on</i></div>
                     </div>
-                    <div class="row">
-                        <div class="twelve columns">
+                    <div>
+                        <div>
                             <i class="material-icons">check_box</i> Repeat
                         </div>
                     </div>
-                    <div class="row">
+                    <div>
                         S M T W T F S
                     </div>
-                    <div class="row">
-                        <div class="eight columns">
+                    <div>
+                        <div>
                             <i class="material-icons">notifications-active</i>&nbsp;&nbsp;The Morning Breaks
                         </div>
-                        <div class="four columns">
+                        <div>
                             <i class="fas fa-check-square"></i> Vibrate
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="eight columns">
+                    <div>
+                        <div>
                             <i class="fas fa-tag"></i>&nbsp;&nbsp;&nbsp;Wake up
                         </div>
                     </div>

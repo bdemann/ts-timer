@@ -127,7 +127,6 @@ class TIMEApp extends HTMLElement {
                     <span class="material-icons app-button-icon">timer</span>
                     <br>Stopwatch
                 </span>
-                <span class="stretch"></span>
             </div>
         </div>
         `;

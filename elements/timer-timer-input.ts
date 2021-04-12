@@ -168,18 +168,13 @@ class TIMETimerInput extends HTMLElement {
                     user-select: none;
                 }
                 .input-row {
-                    margin-bottom: 25px;
+                    margin-bottom: 40px;
                 }
                 .input-number {
                     font-size: 18pt;
                 }
-                #bottom-row {
-                    margin-bottom: 0;
-                    line-height: 0;
-                    font-size: 0;
-                }
                 #keypad {
-                    padding: 30px 80px 0 80px;
+                    padding: 30px 50px 0 50px;
                 }
                 hr {
                     width: 80%;
@@ -211,26 +206,21 @@ class TIMETimerInput extends HTMLElement {
                         <div class="cols input-number" @click=${() => this.handleInput(1)}>1</div>
                         <div class="cols input-number" @click=${() => this.handleInput(2)}>2</div>
                         <div class="cols input-number" @click=${() => this.handleInput(3)}>3</div>
-                        <span class="stretch"></span>
                     </div>
                     <div class="row input-row">
                         <div class="cols input-number" @click=${() => this.handleInput(4)}>4</div>
                         <div class="cols input-number" @click=${() => this.handleInput(5)}>5</div>
                         <div class="cols input-number" @click=${() => this.handleInput(6)}>6</div>
-                        <span class="stretch"></span>
                     </div>
                     <div class="row input-row">
                         <div class="cols input-number" @click=${() => this.handleInput(7)}>7</div>
                         <div class="cols input-number" @click=${() => this.handleInput(8)}>8</div>
                         <div class="cols input-number" @click=${() => this.handleInput(9)}>9</div>
-                        <span class="stretch"></span>
                     </div>
                     <div class="row input-row" id="bottom-row">
-                        <!-- <div class="four columns input-number">&nbsp;</div> -->
                         <div class="cols input-number">&nbsp;</div>
                         <div class="cols input-number" @click=${() => this.handleInput(0)}>0</div>
                         <div class="cols input-number">&nbsp;</div>
-                        <span class="stretch"></span>
                     </div>
                 </div>
             </div>

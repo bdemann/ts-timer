@@ -54,6 +54,9 @@ class TIMEStopwatch extends HTMLElement {
 
     render() {
         return html`
+            <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        rel="stylesheet">
+            <link rel="stylesheet" href="css/styles.css">
             <style>
                 #stopwatch-time {
                     padding: 30% 0;
@@ -69,11 +72,18 @@ class TIMEStopwatch extends HTMLElement {
                 }
             </style>
             <div id="stopwatch-body">
-                <div id="stopwatch-time"><span>${millisToHourMinSec(this.runTime)}</span><span id='millis-display'>${this.toStopwatchMillis(this.runTime)}</span></div>
-                <div id="sw-controls" class="row">
-                    <div class="four columns" @click=${() => this.handleReset()}>Reset</div>
-                    <button class="four columns" @click=${() => this.handleStopwatch()}>Start</button>
-                    <div class="four columns">Lap</div>
+                <div id="stopwatch-time">
+                    <span>${millisToHourMinSec(this.runTime)}</span>
+                    <span id='millis-display'>
+                        ${this.toStopwatchMillis(this.runTime)}
+                    </span>
+                </div>
+                <div id="timer-controls" class="row controls">
+                    <div class="control-button" @click=${() => this.handleReset()}>Reset</div>
+                    <span class="material-icons control-button main-button" @click=${() => this.handleStopwatch()}>
+                        ${this.running ? "pause_circle_filled" : "play_circle_filled"}
+                    </span>
+                    <div class="control-button" @click=${() => console.log("lap")}>Lap</div>
                 </div>
             </div>
         `;

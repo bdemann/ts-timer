@@ -215,52 +215,40 @@ class TIMETimer extends HTMLElement {
                 #timer-body {
                     height: 100%;
                 }
-                #timer-controls, #input-controls {
-                    padding: 20px;
-                    box-sizing: border-box;
-                    /* text-align: center; */
-                }
-                .controls {
-                    text-align: center;
-                }
                 #previous-button {
                     text-align: right;
                 }
-                .start-stop-pause-button {
-                    color: var(--activeColor);
-                    font-size: 45pt;
-                }
             </style>
             <div id="timer-body">
-                <!-- <time-timedisplay paused="true" elapsed="true" .paused=${true}></time-timedisplay> -->
                 <time-timerinput .value=${state.timers[state.currentTimer].timerLength} ?hidden=${state.currentDisplayType !== 'input'} @input=${(e:CustomEvent)=>this.onInputChange(e)}></time-timerinput>
                 <time-timedisplay ?hidden=${state.currentDisplayType !== 'timers'} .timerLength=${state.timers[state.currentTimer].timerLength} .elapsed=${state.timers[state.currentTimer].elapsed} .paused=${state.timers[state.currentTimer].paused} .radius=${100} .timeElapsed=${state.timers[state.currentTimer].timeElapsed}></time-timedisplay>
-                <div ?hidden=${state.currentDisplayType !== 'input'} id="input-controls" class="row controls">
-                    <div class="three cols" @click=${() => this.handleCancel()}>&nbsp;${(state.timers.length < 2 ? "" : 'Cancel')}</div>
-                    <span ?hidden=${state.timers[state.currentTimer].timerLength === 0} class="material-icons cols three start-stop-pause-button" @click=${() => this.handleStartTimer()}>
-                        ${state.timers[state.currentTimer].timerLength === 0 ? "" : "play_circle_filled"}
-                    </span>
-                    <div class="three cols">&nbsp;</div>
-                    <span class="stretch"></span>
+                <div ?hidden=${state.currentDisplayType !== 'input'}>
+                    <div id="input-controls" class="row controls">
+                        <div class="control-button" @click=${() => this.handleCancel()}>&nbsp;${(state.timers.length < 2 ? "" : 'Cancel')}</div>
+                        <span ?hidden=${state.timers[state.currentTimer].timerLength === 0} class="material-icons control-button main-button" @click=${() => this.handleStartTimer()}>
+                            ${state.timers[state.currentTimer].timerLength === 0 ? "" : "play_circle_filled"}
+                        </span>
+                        <div class="control-button">&nbsp;</div>
+                    </div>
                 </div>
-                <div ?hidden=${state.currentDisplayType !== 'timers'} id="timer-controls" class="row controls">
-                    <div class="three cols" @click=${() => this.handleDelete()}>Delete</div>
-                    <span class="material-icons three cols start-stop-pause-button" @click=${() => this.handlebutton()}>
-                        ${state.timers[state.currentTimer].paused ? "play_circle_filled" : state.timers[state.currentTimer].elapsed ? "cancel" : state.timers[state.currentTimer].running ? "pause_circle_filled" : "play_circle_filled"}
-                    </span>
-                    <div class="three cols" @click=${() => this.handleAddTimer()}>Add timer</div>
-                    <span class="stretch"></span>
+                <div ?hidden=${state.currentDisplayType !== 'timers'}>
+                    <div id="timer-controls" class="controls">
+                        <div class="control-button" @click=${() => this.handleDelete()}>Delete</div>
+                        <span class="material-icons main-button control-button" @click=${() => this.handlebutton()}>
+                            ${state.timers[state.currentTimer].paused ? "play_circle_filled" : state.timers[state.currentTimer].elapsed ? "cancel" : state.timers[state.currentTimer].running ? "pause_circle_filled" : "play_circle_filled"}
+                        </span>
+                        <div class="control-button" @click=${() => this.handleAddTimer()}>Add timer</div>
+                    </div>
                 </div>
-                <div class="row" ?hidden=${state.currentDisplayType !== 'timers'}>
-                    <div id="previous-button" class="two cols">
+                <div ?hidden=${state.currentDisplayType !== 'timers'}>
+                    <div id="previous-button">
                         &nbsp;
                         <button ?hidden=${state.currentTimer === 0} @click=${() => this.handlePrevious()}>&#8592;</button>
                     </div>
-                    <div class="two cols">
+                    <div>
                         <button ?hidden=${state.currentTimer === state.timers.length -1} @click=${() => this.handleNext()}>&#8594;</button>
                         &nbsp;
                     </div>
-                    <span class="stretch"></span>
                 </div>
                 <br>
             </div>
