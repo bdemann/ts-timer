@@ -80,9 +80,11 @@ class TIMEStopwatch extends HTMLElement {
                 </div>
                 <div id="timer-controls" class="row controls">
                     <div class="control-button" @click=${() => this.handleReset()}>Reset</div>
-                    <span class="material-icons control-button main-button" @click=${() => this.handleStopwatch()}>
-                        ${this.running ? "pause_circle_filled" : "play_circle_filled"}
-                    </span>
+                    <div class="control-button">
+                        <span class="material-icons main-button" @click=${() => this.handleStopwatch()}>
+                            ${this.running ? "pause" : "play_arrow"}
+                        </span>
+                    </div>
                     <div class="control-button" @click=${() => console.log("lap")}>Lap</div>
                 </div>
             </div>

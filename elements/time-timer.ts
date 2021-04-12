@@ -225,18 +225,26 @@ class TIMETimer extends HTMLElement {
                 <div ?hidden=${state.currentDisplayType !== 'input'}>
                     <div id="input-controls" class="row controls">
                         <div class="control-button" @click=${() => this.handleCancel()}>&nbsp;${(state.timers.length < 2 ? "" : 'Cancel')}</div>
-                        <span ?hidden=${state.timers[state.currentTimer].timerLength === 0} class="material-icons control-button main-button" @click=${() => this.handleStartTimer()}>
-                            ${state.timers[state.currentTimer].timerLength === 0 ? "" : "play_circle_filled"}
-                        </span>
+                        <div class="control-button">
+                            <!-- The hidding is messing up my layout... so I have one that has a &nbsp; that is visible when the other isn't. Is there a better was to do this? I could just always have the nbsp but I worry that will shift my button over -->
+                            <div ?hidden=${state.timers[state.currentTimer].timerLength === 0}>
+                                <span class="material-icons main-button" @click=${() => this.handleStartTimer()}>
+                                    play_arrow
+                                </span>
+                            </div>
+                            <div ?hidden=${state.timers[state.currentTimer].timerLength != 0}>&nbsp;</div>
+                        </div>
                         <div class="control-button">&nbsp;</div>
                     </div>
                 </div>
                 <div ?hidden=${state.currentDisplayType !== 'timers'}>
                     <div id="timer-controls" class="controls">
                         <div class="control-button" @click=${() => this.handleDelete()}>Delete</div>
-                        <span class="material-icons main-button control-button" @click=${() => this.handlebutton()}>
-                            ${state.timers[state.currentTimer].paused ? "play_circle_filled" : state.timers[state.currentTimer].elapsed ? "cancel" : state.timers[state.currentTimer].running ? "pause_circle_filled" : "play_circle_filled"}
-                        </span>
+                        <div class="control-button"> 
+                            <span class="material-icons main-button control-button" @click=${() => this.handlebutton()}>
+                                ${state.timers[state.currentTimer].paused ? "play_arrow" : state.timers[state.currentTimer].elapsed ? "stop" : state.timers[state.currentTimer].running ? "pause" : "play_arrow"}
+                            </span>
+                        </div>
                         <div class="control-button" @click=${() => this.handleAddTimer()}>Add timer</div>
                     </div>
                 </div>

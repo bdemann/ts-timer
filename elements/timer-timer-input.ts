@@ -203,24 +203,24 @@ class TIMETimerInput extends HTMLElement {
                 <hr>
                 <div id="keypad">
                     <div class="row input-row">
-                        <div class="cols input-number" @click=${() => this.handleInput(1)}>1</div>
-                        <div class="cols input-number" @click=${() => this.handleInput(2)}>2</div>
-                        <div class="cols input-number" @click=${() => this.handleInput(3)}>3</div>
+                        <div class="col input-number" @click=${() => this.handleInput(1)}>1</div>
+                        <div class="col input-number" @click=${() => this.handleInput(2)}>2</div>
+                        <div class="col input-number" @click=${() => this.handleInput(3)}>3</div>
                     </div>
                     <div class="row input-row">
-                        <div class="cols input-number" @click=${() => this.handleInput(4)}>4</div>
-                        <div class="cols input-number" @click=${() => this.handleInput(5)}>5</div>
-                        <div class="cols input-number" @click=${() => this.handleInput(6)}>6</div>
+                        <div class="col input-number" @click=${() => this.handleInput(4)}>4</div>
+                        <div class="col input-number" @click=${() => this.handleInput(5)}>5</div>
+                        <div class="col input-number" @click=${() => this.handleInput(6)}>6</div>
                     </div>
                     <div class="row input-row">
-                        <div class="cols input-number" @click=${() => this.handleInput(7)}>7</div>
-                        <div class="cols input-number" @click=${() => this.handleInput(8)}>8</div>
-                        <div class="cols input-number" @click=${() => this.handleInput(9)}>9</div>
+                        <div class="col input-number" @click=${() => this.handleInput(7)}>7</div>
+                        <div class="col input-number" @click=${() => this.handleInput(8)}>8</div>
+                        <div class="col input-number" @click=${() => this.handleInput(9)}>9</div>
                     </div>
                     <div class="row input-row" id="bottom-row">
-                        <div class="cols input-number">&nbsp;</div>
-                        <div class="cols input-number" @click=${() => this.handleInput(0)}>0</div>
-                        <div class="cols input-number">&nbsp;</div>
+                        <div class="col input-number">&nbsp;</div>
+                        <div class="col input-number" @click=${() => this.handleInput(0)}>0</div>
+                        <div class="col input-number">&nbsp;</div>
                     </div>
                 </div>
             </div>
