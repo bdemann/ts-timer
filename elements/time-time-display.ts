@@ -11,6 +11,8 @@ import {
     millisToHourMinSecString
 } from '../ts/utils';
 
+type labelMode = 'input' | 'label';
+
 type State = Readonly<{
     radius: number,
     stroke: number,
@@ -20,6 +22,7 @@ type State = Readonly<{
     timerLength: number,
     timeElapsed: number,
     label: string,
+    labelMode: labelMode,
     buttonLabel: string
 }>;
 
@@ -32,6 +35,7 @@ const InitialState: State = {
     timeElapsed: 0,
     timerLength: 100000,
     label: 'Label',
+    labelMode: 'label',
     buttonLabel: '+1:00'
 };
 
@@ -107,7 +111,17 @@ class TIMETimeDispaly extends HTMLElement {
         this.dispatchEvent(new CustomEvent('button'));
     }
     handleLabel() {
+        if (this.store.labelMode === 'label') {
+            this.store.labelMode = 'input';
+        }
+        (<HTMLInputElement>this.shadow.querySelector('#label-input')).focus();
         this.dispatchEvent(new CustomEvent('label'));
+    }
+    handleFocusOut() {
+        this.store.labelMode = 'label'
+        //TODO make this more better with events and stuff
+        let label = (<HTMLInputElement>this.shadow.querySelector('#label-input')).value.trim()
+        this.store.label = label === "" ? this.store.label : label;
     }
 
     render(state:State) {
@@ -131,7 +145,18 @@ class TIMETimeDispaly extends HTMLElement {
                 #label {
                     position: absolute;
                     top: 30px;
-                    left: 80px;
+                    left: 0;
+                    right: 0;
+                    margin: auto;
+                    text-align: center;
+                }
+                #label-input:focus{
+                    background: none;
+                    border: none;
+                    color: var(--bodyColor);
+                    border-bottom: 2px solid var(--inactiveColor);
+                    outline: none;
+                    width: 80px;
                 }
                 #button {
                     position: absolute;
@@ -180,7 +205,12 @@ class TIMETimeDispaly extends HTMLElement {
                     <circle cx="${this._pos()}", cy="${this._pos()}" r="${this.store.radius}"></circle>
                 </svg>
                 <div id="display-text">
-                    <div id="label" @click=${() => this.handleLabel()}>${state.label}</div>
+                    <div id="label" @click=${() => this.handleLabel()}>
+                        <label id="label-label" ?hidden=${state.labelMode !== "label"}>
+                            ${state.label}
+                        </label>
+                        <input id="label-input" @focusout=${() => this.handleFocusOut()} ?hidden=${state.labelMode !== "input"}>
+                    </div>
                     <!-- TODO I like adding the 1000 ms to the timer so that it start with the time you put in and ends as 1 turns to zero instead of having a whole second where its at zero but the timer isn't elapsed.
                     But there is still the problem that we have two whole seconds of what is displayed as zero. from 0.999 seconds to -0.999 seconds. 
                     How do I handle that. One hack I am trying is to only add those 999 when we are positive still. It still feels hacky. This whole thing feels hacky-->
