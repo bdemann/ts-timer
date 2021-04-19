@@ -52,6 +52,13 @@ class TIMEAlarm extends HTMLElement {
                     </div>
                 </div>
                 <hr>
+                <div class="controls">
+                    <div class="control-button"> 
+                        <span class="material-icons main-button control-button" @click=${() => console.log("Add alarm")}>
+                            add
+                        </span>
+                    </div>
+                </div>
             </div>
         `;
     }

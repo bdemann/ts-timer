@@ -28,7 +28,7 @@ class TIMEApp extends HTMLElement {
     }
 
     setup(){
-        this.currentDisplayType = 'timer'
+        this.currentDisplayType = 'clock'
         return;
     }
 
