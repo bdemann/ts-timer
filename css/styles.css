@@ -10,26 +10,41 @@ body {
 }
 
 .row {
-    text-align: justify;
-    text-justify: distribute-all-lines;
+    display: flex;
+    align-items: justify;
+    justify-content: center;
 }
 
-.cols {
-    vertical-align: top;
-    display: inline-block;
+.col {
+    flex: 1;
 }
 
-.two {
-    width: 45%;
-}
+/* Make sure all app controls have the same location and layout */
+.controls {
+    padding: 0 20px;
+    box-sizing: border-box;
+    text-align: center;
 
-.three {
-    width: 30%;
-}
-
-.stretch {
+    position: fixed;
+    bottom: 80px;
     width: 100%;
-    display: inline-block;
-    font-size: 0;
-    line-height: 0;
+    max-width: 500px;
+    height: 60px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.control-button {
+    flex: 1;
+}
+.main-button {
+    font-size: 25pt;
+    color: var(--backgroundColor);
+    background-color: var(--activeColor);
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    border-radius: 25px;
 }

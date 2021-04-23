@@ -19,6 +19,7 @@ type State = Readonly<{
 }>;
 type Actions = DELETE_TIMER
 type Timer = Readonly<{
+    origTimerLength: number;
     timerLength: number;
     timeLeft: number;
     timeElapsed: number;
@@ -39,10 +40,16 @@ const InitialState: State = {
     currentTimer: 0,
     timers: [createNewTimer()]
 };
+const InitialStateTest: State = {
+    runTime: 0,
+    currentDisplayType: 'timers',
+    currentTimer: 0,
+    timers: [createNewTestTimer()]
+};
 
 class TIMETimer extends HTMLElement {
 
-    readonly store = createObjectStore(InitialState, (state) => litRender(this.render(state), this.shadowRoot), this, (state: State, action:Actions) => {
+    readonly store = createObjectStore(InitialStateTest, (state) => litRender(this.render(state), this.shadowRoot), this, (state: State, action:Actions) => {
         if (action.type === 'DELETE_ACTION') {
             let newTimers = state.timers.filter((element, index) => {
                 return state.currentTimer != index;
@@ -132,17 +139,10 @@ class TIMETimer extends HTMLElement {
             if (index === this.store.currentTimer) {
                 return {
                     ...timer,
-                    running: true
+                    running: true,
+                    startTime: new Date(),
+                    origTimerLength: timer.timerLength
                 };
-            }
-            return timer;
-        });
-        this.store.timers = this.store.timers.map((timer:Timer, index) => {
-            if (index === this.store.currentTimer) {
-                return {
-                    ...timer,
-                    startTime: new Date()
-                }
             }
             return timer;
         });
@@ -172,11 +172,7 @@ class TIMETimer extends HTMLElement {
                 if (timer.running) {
                     if (timer.elapsed) {
                         return {
-                            ...timer,
-                            running: false,
-                            elapsed: false,
-                            previousTimeElapsed: 0,
-                            timeElapsed: 0
+                            ...resetTimer(timer),
                         }
                     } else if (timer.paused) {
                         return {
@@ -194,15 +190,39 @@ class TIMETimer extends HTMLElement {
                 return {
                     ...timer,
                     running: true,
-                    startTime: new Date()
+                    startTime: new Date(),
+                    origTimerLength: timer.timerLength
                 }
             }
             return timer;
         });
     }
 
-    onTestInputChange(event: CustomEvent, self: TIMETimer) {
-        console.log(event.detail)
+    handleDisplayButton() {
+        // If running add a minute, if paused reset the timer
+        if (this.store.timers[this.store.currentTimer].running && !this.store.timers[this.store.currentTimer].paused) {
+            this.store.timers = this.store.timers.map((timer, index) => {
+                if (this.store.currentTimer === index) {
+                    return {
+                        ...timer,
+                        timerLength: timer.timerLength + 60 * 1000
+                    }
+                }
+                return timer;
+            });
+        } else {
+            this.store.timers = this.store.timers.map((timer, index) => {
+                if (this.store.currentTimer === index) {
+                    return {
+                        ...resetTimer(timer),
+                    }
+                }
+                return timer;
+            });
+        }
+    }
+    handleDisplayLabel() {
+        console.log("the display label was pressed");
     }
 
     render(state: State) {
@@ -215,52 +235,60 @@ class TIMETimer extends HTMLElement {
                 #timer-body {
                     height: 100%;
                 }
-                #timer-controls, #input-controls {
-                    padding: 20px;
-                    box-sizing: border-box;
-                    /* text-align: center; */
-                }
-                .controls {
-                    text-align: center;
-                }
                 #previous-button {
                     text-align: right;
                 }
-                .start-stop-pause-button {
-                    color: var(--activeColor);
-                    font-size: 45pt;
-                }
             </style>
             <div id="timer-body">
-                <!-- <time-timedisplay paused="true" elapsed="true" .paused=${true}></time-timedisplay> -->
                 <time-timerinput .value=${state.timers[state.currentTimer].timerLength} ?hidden=${state.currentDisplayType !== 'input'} @input=${(e:CustomEvent)=>this.onInputChange(e)}></time-timerinput>
-                <time-timedisplay ?hidden=${state.currentDisplayType !== 'timers'} .timerLength=${state.timers[state.currentTimer].timerLength} .elapsed=${state.timers[state.currentTimer].elapsed} .paused=${state.timers[state.currentTimer].paused} .radius=${100} .timeElapsed=${state.timers[state.currentTimer].timeElapsed}></time-timedisplay>
-                <div ?hidden=${state.currentDisplayType !== 'input'} id="input-controls" class="row controls">
-                    <div class="three cols" @click=${() => this.handleCancel()}>&nbsp;${(state.timers.length < 2 ? "" : 'Cancel')}</div>
-                    <span ?hidden=${state.timers[state.currentTimer].timerLength === 0} class="material-icons cols three start-stop-pause-button" @click=${() => this.handleStartTimer()}>
-                        ${state.timers[state.currentTimer].timerLength === 0 ? "" : "play_circle_filled"}
-                    </span>
-                    <div class="three cols">&nbsp;</div>
-                    <span class="stretch"></span>
-                </div>
-                <div ?hidden=${state.currentDisplayType !== 'timers'} id="timer-controls" class="row controls">
-                    <div class="three cols" @click=${() => this.handleDelete()}>Delete</div>
-                    <span class="material-icons three cols start-stop-pause-button" @click=${() => this.handlebutton()}>
-                        ${state.timers[state.currentTimer].paused ? "play_circle_filled" : state.timers[state.currentTimer].elapsed ? "cancel" : state.timers[state.currentTimer].running ? "pause_circle_filled" : "play_circle_filled"}
-                    </span>
-                    <div class="three cols" @click=${() => this.handleAddTimer()}>Add timer</div>
-                    <span class="stretch"></span>
-                </div>
-                <div class="row" ?hidden=${state.currentDisplayType !== 'timers'}>
-                    <div id="previous-button" class="two cols">
-                        &nbsp;
-                        <button ?hidden=${state.currentTimer === 0} @click=${() => this.handlePrevious()}>&#8592;</button>
+                <time-timedisplay 
+                    .buttonLabel=${state.timers[state.currentTimer].running && !state.timers[state.currentTimer].paused ? "+1:00" : "Reset"}
+                    @button=${() => this.handleDisplayButton()}
+                    @label=${() => this.handleDisplayLabel()}
+                    ?hidden=${state.currentDisplayType !== 'timers'}
+                    .timerLength=${state.timers[state.currentTimer].timerLength}
+                    .elapsed=${state.timers[state.currentTimer].elapsed}
+                    .paused=${state.timers[state.currentTimer].paused}
+                    .radius=${100}
+                    .timeElapsed=${state.timers[state.currentTimer].timeElapsed}>
+                </time-timedisplay>
+                <div ?hidden=${state.currentDisplayType !== 'input'}>
+                    <div id="input-controls" class="row controls">
+                        <div class="control-button" @click=${() => this.handleCancel()}>&nbsp;${(state.timers.length < 2 ? "" : 'Cancel')}</div>
+                        <div class="control-button">
+                            <!-- The hidding is messing up my layout... so I have one that has a &nbsp; that is visible when the other isn't. Is there a better was to do this? I could just always have the nbsp but I worry that will shift my button over -->
+                            <div ?hidden=${state.timers[state.currentTimer].timerLength === 0}>
+                                <span class="material-icons main-button" @click=${() => this.handleStartTimer()}>
+                                    play_arrow
+                                </span>
+                            </div>
+                            <div ?hidden=${state.timers[state.currentTimer].timerLength != 0}>&nbsp;</div>
+                        </div>
+                        <div class="control-button">&nbsp;</div>
                     </div>
-                    <div class="two cols">
-                        <button ?hidden=${state.currentTimer === state.timers.length -1} @click=${() => this.handleNext()}>&#8594;</button>
-                        &nbsp;
+                </div>
+                <div ?hidden=${state.currentDisplayType !== 'timers'}>
+                    <div id="timer-controls" class="controls">
+                        <div class="control-button" @click=${() => this.handleDelete()}>Delete</div>
+                        <div class="control-button"> 
+                            <span class="material-icons main-button control-button" @click=${() => this.handlebutton()}>
+                                ${state.timers[state.currentTimer].paused ? "play_arrow" : state.timers[state.currentTimer].elapsed ? "stop" : state.timers[state.currentTimer].running ? "pause" : "play_arrow"}
+                            </span>
+                        </div>
+                        <div class="control-button" @click=${() => this.handleAddTimer()}>Add timer</div>
                     </div>
-                    <span class="stretch"></span>
+                </div>
+                <div id="timer-nav" ?hidden=${state.currentDisplayType !== 'timers'}>
+                    <div class="row" >
+                        <div class="col" id="previous-button">
+                            &nbsp;
+                            <button ?hidden=${state.currentTimer === 0} @click=${() => this.handlePrevious()}>&#8592;</button>
+                        </div>
+                        <div class="col">
+                            <button ?hidden=${state.currentTimer === state.timers.length -1} @click=${() => this.handleNext()}>&#8594;</button>
+                            &nbsp;
+                        </div>
+                    </div>
                 </div>
                 <br>
             </div>
@@ -271,12 +299,39 @@ class TIMETimer extends HTMLElement {
 
 function createNewTimer():Timer{
     return {
+        origTimerLength: 0,
         timerLength: 0,
         timeElapsed: 0,
         startTime: new Date(),
         previousTimeElapsed: 0,
         running: false,
         elapsed: true,
+        paused: false,
+        timeLeft: 0
+    }
+}
+function resetTimer(timer:Timer):Timer {
+    return {
+        ...timer,
+        timerLength: timer.origTimerLength,
+        timeElapsed: 0,
+        startTime: new Date(),
+        previousTimeElapsed: 0,
+        running: false,
+        elapsed: false,
+        paused: false,
+        timeLeft: 0
+    }
+}
+function createNewTestTimer():Timer{
+    return {
+        origTimerLength: 0,
+        timerLength: 10000,
+        timeElapsed: 0,
+        startTime: new Date(),
+        previousTimeElapsed: 0,
+        running: false,
+        elapsed: false,
         paused: false,
         timeLeft: 0
     }

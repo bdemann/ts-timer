@@ -28,7 +28,7 @@ class TIMEApp extends HTMLElement {
     }
 
     setup(){
-        this.currentDisplayType = 'timer'
+        this.currentDisplayType = 'clock'
         return;
     }
 
@@ -111,23 +111,22 @@ class TIMEApp extends HTMLElement {
         </div>
         <div id="app-menu">
             <div id="app-nav" class="row">
-                <span class="app-button cols ${this.isSelected("alarm")}" id="alarm-button" @click="${() => this.setDisplay("alarm")}">
+                <span class="app-button col ${this.isSelected("alarm")}" id="alarm-button" @click="${() => this.setDisplay("alarm")}">
                     <span class="material-icons app-button-icon">access_alarm</span>
                     <br>Alarm
                 </span>
-                <span class="app-button cols ${this.isSelected("clock")}" id="clock-button" @click=${() => this.setDisplay("clock")}>
+                <span class="app-button col ${this.isSelected("clock")}" id="clock-button" @click=${() => this.setDisplay("clock")}>
                     <span class="material-icons app-button-icon">schedule</span>
                     <br>Clock
                 </span>
-                <span class="app-button cols ${this.isSelected("timer")}" id="timer-button" @click=${() => this.setDisplay("timer")}>
+                <span class="app-button col ${this.isSelected("timer")}" id="timer-button" @click=${() => this.setDisplay("timer")}>
                     <span class="material-icons app-button-icon">hourglass_bottom</span>
                     <br>Timer
                 </span>
-                <span class="app-button cols ${this.isSelected("stopwatch")}" id="stopwatch-button" @click=${() => this.setDisplay("stopwatch")}>
+                <span class="app-button col ${this.isSelected("stopwatch")}" id="stopwatch-button" @click=${() => this.setDisplay("stopwatch")}>
                     <span class="material-icons app-button-icon">timer</span>
                     <br>Stopwatch
                 </span>
-                <span class="stretch"></span>
             </div>
         </div>
         `;

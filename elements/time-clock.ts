@@ -46,8 +46,8 @@ class TIMEClock extends HTMLElement {
             <div id="clock-body">
                 <div id="clock">
                     <div id="main-clock">
-                        <div class="row">
-                            <div class="twelve columns" id="main-clock-time">
+                        <div>
+                            <div id="main-clock-time">
                                 ${this.time.toLocaleString('default', this.time_options).toLowerCase()}
                             </div>
                         </div>
@@ -58,6 +58,13 @@ class TIMEClock extends HTMLElement {
 
                     </div>
                     
+                </div>
+                <div class="controls">
+                    <div class="control-button"> 
+                        <span class="material-icons main-button control-button" @click=${() => console.log("Add clock")}>
+                            language
+                        </span>
+                    </div>
                 </div>
             </div>
         `;
