@@ -32,7 +32,7 @@ class TIMETimerInput extends HTMLElement {
     readonly store = createObjectStore(InitialState, (state) => litRender(this.render(state), this.shadowRoot), this);
     readonly shadow = this.attachShadow({
         mode: 'open'
-    })
+    });
 
     get value() {
         return this.convertTimeToMillis();
