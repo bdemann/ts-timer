@@ -7,7 +7,7 @@ import {
    capitalize 
 } from '../ts/utils';
 
-import './time-alarm'
+import './time-alarms'
 import './time-clock'
 import './time-stopwatch'
 import './time-timer'
@@ -104,7 +104,7 @@ class TIMEApp extends HTMLElement {
 
         <div id="app-body">
             <div class='app-title'>${capitalize(this.currentDisplayType)}</div>
-            <time-alarm id="alarm-app" ?hidden=${this.currentDisplayType !== 'alarm'}></time-alarm>
+            <time-alarms id="alarm-app" ?hidden=${this.currentDisplayType !== 'alarm'}></time-alarms>
             <time-clock id="clock-app" ?hidden=${this.currentDisplayType !== 'clock'}></time-clock>
             <time-timer id="timer-app" ?hidden=${this.currentDisplayType !== 'timer'}></time-timer>
             <time-stopwatch id="stopwatch-app" ?hidden=${this.currentDisplayType !== 'stopwatch'}></time-stopwatch>
