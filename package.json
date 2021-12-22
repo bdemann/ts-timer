@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "description": "",
   "scripts": {
-    "start": "zwitterion"
+    "start": "zwitterion",
+    "build-static": "zwitterion --build-static --include",
+    "build-static": "zwitterion --build-static --exclude node_modules"
   },
   "keywords": [],
   "author": "Benjamin DeMann <benjamin.demann@gmail.com>",
